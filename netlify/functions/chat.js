@@ -277,8 +277,15 @@ exports.handler = async (event) => {
 
     const response = await client.messages.create({
       model: 'claude-haiku-4-5-20251001',
-      max_tokens: 2048,
-      system: PROMPTS[botId],
+      max_tokens: 4096,
+      system: PROMPTS[botId] + `
+
+تعليمات الرد:
+- اجعل ردودك مفصلة وعلمية تخدم المنهج الذي تعمل به
+- استند دائماً لمصادرك ومنهجيتك العلمية في كل رد
+- قدم خطوات عملية واضحة ومفصلة
+- لا تقطع الرد — اكمل الفكرة كاملة حتى النهاية
+- استخدم العناوين والتنسيق لتوضيح المحاور`,
       messages: msgs
     });
 
