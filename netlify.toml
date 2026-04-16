@@ -6,3 +6,6 @@
 
 [functions."chat"]
   timeout = 26
+
+[functions."sawt"]
+  timeout = 26
