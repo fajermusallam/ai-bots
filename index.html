@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>مشروع الجماد الحي — بوتات الاستشارة</title>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Tajawal:wght@300;400;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#07070F;--s1:#0F0F1A;--s2:#14141F;--s3:#1C1C2A;
+  --border:#ffffff0D;--text:#EDE8FF;--muted:#7A7595;
+  --gold:#E8B84B;--gold2:#C8960C;
+  --teal:#00C9A7;--rose:#FF6B9D;--sky:#5BC8F5;
+  --peach:#FF8C61;--lavender:#B39DDB;--sage:#81C784;--amber:#FFB74D;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:'Tajawal',sans-serif;background:var(--ink);color:var(--text);min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;
+  background:radial-gradient(ellipse 70% 50% at 10% 20%,rgba(0,201,167,.1),transparent 55%),
+  radial-gradient(ellipse 60% 40% at 90% 70%,rgba(232,184,75,.07),transparent 55%),
+  radial-gradient(ellipse 50% 60% at 50% 100%,rgba(255,107,157,.05),transparent 60%);
+  pointer-events:none;z-index:0;}
+.z{position:relative;z-index:1;}
+@keyframes fu{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fl{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.reveal{opacity:0;transform:translateY(36px);transition:all .7s ease;}
+.reveal.on{opacity:1;transform:translateY(0);}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;padding:16px 28px;display:flex;align-items:center;justify-content:space-between;background:rgba(7,7,15,.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);z-index:100;}
+.nav-brand{display:flex;flex-direction:column;}
+.nav-logo{font-family:'Amiri',serif;font-size:20px;font-weight:700;color:var(--gold);}
+.nav-sub{font-size:10px;color:var(--muted);}
+.nav-cta{padding:9px 22px;border-radius:22px;background:linear-gradient(135deg,var(--gold),var(--gold2));color:#000;font-weight:700;font-size:14px;text-decoration:none;transition:all .2s;}
+.nav-cta:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(232,184,75,.35);}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:120px 24px 80px;}
+.hero-eye{font-size:12px;color:var(--teal);letter-spacing:3px;margin-bottom:18px;animation:fu .9s ease both;}
+.hero-title{font-family:'Amiri',serif;font-size:clamp(44px,7vw,90px);font-weight:700;line-height:1.1;margin-bottom:14px;animation:fu .9s .1s ease both;}
+.hero-title em{font-style:normal;background:linear-gradient(135deg,var(--gold),var(--peach),var(--rose));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.hero-d{font-size:clamp(15px,2vw,19px);color:var(--muted);max-width:600px;line-height:1.8;margin-bottom:38px;animation:fu .9s .2s ease both;}
+.hero-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;animation:fu .9s .3s ease both;}
+.btn-p{padding:14px 32px;border-radius:14px;background:linear-gradient(135deg,var(--gold),var(--gold2));color:#000;font-family:'Tajawal',sans-serif;font-size:16px;font-weight:700;border:none;cursor:pointer;text-decoration:none;transition:all .25s;display:inline-flex;align-items:center;gap:8px;}
+.btn-p:hover{transform:translateY(-3px);box-shadow:0 10px 28px rgba(232,184,75,.4);}
+.btn-g{padding:14px 32px;border-radius:14px;background:transparent;border:1px solid var(--border);color:var(--text);font-family:'Tajawal',sans-serif;font-size:16px;font-weight:600;cursor:pointer;text-decoration:none;transition:all .25s;display:inline-flex;align-items:center;gap:8px;}
+.btn-g:hover{border-color:var(--teal);color:var(--teal);}
+.stats{display:flex;gap:0;margin-top:60px;background:var(--border);border-radius:16px;overflow:hidden;animation:fu .9s .4s ease both;}
+.stat{background:var(--s2);padding:20px 34px;text-align:center;}
+.stn{font-family:'Amiri',serif;font-size:32px;font-weight:700;color:var(--gold);animation:fl 4s ease-in-out infinite;}
+.stl{font-size:12px;color:var(--muted);margin-top:3px;}
+
+/* SECTION */
+.sec{padding:90px 24px;max-width:1080px;margin:0 auto;}
+.eye{font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--teal);margin-bottom:10px;display:block;}
+.sh{font-family:'Amiri',serif;font-size:clamp(28px,4vw,48px);font-weight:700;margin-bottom:14px;line-height:1.2;}
+.sd{font-size:16px;color:var(--muted);max-width:560px;line-height:1.8;margin-bottom:50px;}
+
+/* BOTS GRID */
+.bots-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:2px;background:var(--border);border-radius:24px;overflow:hidden;}
+.bot{background:var(--s1);padding:26px 22px;transition:background .25s;position:relative;overflow:hidden;}
+.bot::before{content:'';position:absolute;top:0;right:0;left:0;height:2px;background:var(--bc);}
+.bot:hover{background:var(--s3);}
+.bot-em{font-size:36px;margin-bottom:12px;display:block;}
+.bot-name{font-family:'Amiri',serif;font-size:20px;font-weight:700;margin-bottom:3px;}
+.bot-en{font-size:11px;font-weight:700;letter-spacing:1px;margin-bottom:10px;color:var(--bc);}
+.bot-d{font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:14px;}
+.bot-tags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px;}
+.tcan{display:inline-block;padding:3px 9px;border-radius:6px;font-size:11px;background:rgba(0,201,167,.1);color:var(--teal);border:1px solid rgba(0,201,167,.2);}
+.tcant{display:inline-block;padding:3px 9px;border-radius:6px;font-size:11px;background:rgba(255,107,157,.08);color:var(--rose);border:1px solid rgba(255,107,157,.2);}
+.bot-disc{font-size:11px;color:rgba(232,184,75,.7);background:rgba(232,184,75,.06);border:1px solid rgba(232,184,75,.12);border-radius:8px;padding:8px 10px;line-height:1.5;margin-bottom:10px;}
+.bot-link{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;border-radius:10px;font-size:13px;font-weight:700;font-family:'Tajawal',sans-serif;text-decoration:none;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:var(--text);transition:all .2s;}
+.bot-link:hover{background:var(--bc);color:#000;border-color:var(--bc);}
+
+/* PRICING */
+.price-tabs{display:flex;gap:0;background:var(--s2);border-radius:12px;overflow:hidden;width:fit-content;margin-bottom:36px;border:1px solid var(--border);}
+.ptab{padding:11px 26px;font-family:'Tajawal',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:all .2s;color:var(--muted);background:transparent;border:none;}
+.ptab.on{background:linear-gradient(135deg,var(--gold),var(--gold2));color:#000;}
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;}
+.pcard{background:var(--s2);border:1px solid var(--border);border-radius:18px;padding:28px 24px;transition:all .3s;position:relative;overflow:hidden;}
+.pcard:hover{transform:translateY(-5px);box-shadow:0 18px 40px rgba(0,0,0,.4);}
+.pcard.feat{border-color:var(--gold);background:linear-gradient(135deg,rgba(232,184,75,.07),rgba(200,150,12,.03));}
+.pbadge{position:absolute;top:18px;left:18px;padding:3px 11px;border-radius:16px;background:linear-gradient(135deg,var(--gold),var(--gold2));color:#000;font-size:11px;font-weight:700;}
+.pplan{font-size:12px;color:var(--muted);font-weight:700;letter-spacing:1px;margin-bottom:8px;}
+.pamount{font-family:'Amiri',serif;font-size:50px;font-weight:700;color:var(--gold);line-height:1;margin-bottom:4px;}
+.pperiod{font-size:14px;color:var(--muted);margin-bottom:6px;}
+.psave{font-size:13px;color:var(--teal);font-weight:700;margin-bottom:22px;}
+.pfeats{display:flex;flex-direction:column;gap:9px;margin-bottom:24px;}
+.pfeat{display:flex;align-items:center;gap:9px;font-size:14px;}
+.pfeat::before{content:'✦';color:var(--gold);font-size:10px;flex-shrink:0;}
+.pbtn{width:100%;padding:13px;border-radius:11px;font-family:'Tajawal',sans-serif;font-size:15px;font-weight:700;border:none;cursor:pointer;transition:all .2s;background:linear-gradient(135deg,var(--gold),var(--gold2));color:#000;}
+.pbtn:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(232,184,75,.35);}
+.pbtn.ghost{background:transparent;border:1px solid var(--border);color:var(--text);}
+.pbtn.ghost:hover{border-color:var(--gold);color:var(--gold);}
+.pbtn.more{background:linear-gradient(135deg,var(--teal),#00A085);color:#000;}
+
+/* FOOTER */
+footer{padding:50px 24px 36px;border-top:1px solid var(--border);text-align:center;}
+.flogo{font-family:'Amiri',serif;font-size:28px;font-weight:700;color:var(--gold);margin-bottom:10px;}
+.fcopy{font-size:12px;color:var(--muted);margin-top:20px;}
+</style>
+</head>
+<body>
+
+<nav class="z">
+  <div class="nav-brand">
+    <div class="nav-logo">مشروع الجماد الحي ✦</div>
+    <div class="nav-sub">بوتات الاستشارة الذكية</div>
+  </div>
+  <a href="https://fashionection.com" class="nav-cta">اشترك الآن ←</a>
+</nav>
+
+<!-- HERO -->
+<div class="hero z">
+  <div class="hero-eye">✦ رفيقك الذكي في كل خطوة</div>
+  <!-- FIX 1: عشرة → اثنا عشر -->
+  <h1 class="hero-title">اثنا عشر رفيقاً<br><em>في مكان واحد</em></h1>
+  <p class="hero-d">بوتات ذكية متخصصة في الصحة النفسية والعلاقات والإبداع والروحانيات والمحتوى — كل واحد يعرفك ويتحدث بلغتك.</p>
+  <div class="hero-btns">
+    <a href="https://fashionection.com" class="btn-p">ابدأ رحلتك ✦</a>
+    <a href="#bots" class="btn-g">تعرف على الرفاق ↓</a>
+  </div>
+  <div class="stats">
+    <div class="stat"><div class="stn">١٢</div><div class="stl">بوت متخصص</div></div>
+    <div class="stat"><div class="stn" style="animation-delay:.3s">٢٤/٧</div><div class="stl">متاح دائماً</div></div>
+    <div class="stat"><div class="stn" style="animation-delay:.6s">∞</div><div class="stl">محادثات بلا حدود</div></div>
+  </div>
+</div>
+
+<!-- BOTS -->
+<section id="bots" class="sec z">
+  <div class="reveal">
+    <span class="eye">✦ تعرف على رفاقك</span>
+    <h2 class="sh">الاثنا عشر رفيقاً</h2>
+    <p class="sd">كل بوت شخصية مستقلة — يعرف تخصصه، يحترم حدوده، ويساعدك بصدق.</p>
+  </div>
+  <div class="bots-grid reveal">
+
+    <!-- FIX 2+3: حذف onclick من كل div، إبقاء <a> فقط -->
+
+    <!-- نور -->
+    <div class="bot" style="--bc:var(--gold)">
+      <span class="bot-em">🌟</span>
+      <div class="bot-name">نور</div>
+      <div class="bot-en">NOOR · الصحة النفسية</div>
+      <div class="bot-d">رفيقتك في الصحة النفسية — تستمع، تفهم، وترشدك بدفء نحو التوازن.</div>
+      <div class="bot-tags">
+        <span class="tcan">دعم نفسي</span><span class="tcan">التوازن العاطفي</span><span class="tcan">إدارة القلق</span>
+        <span class="tcant">تشخيص طبي</span>
+      </div>
+      <div class="bot-disc">⚠️ للدعم العاطفي فقط. الحالات الطبية تحتاج متخصصاً.</div>
+      <a href="noor.html" target="_blank" class="bot-link">تحدث مع نور ←</a>
+    </div>
+
+    <!-- رواد -->
+    <div class="bot" style="--bc:var(--sky)">
+      <span class="bot-em">🚀</span>
+      <div class="bot-name">رواد</div>
+      <div class="bot-en">RAWED · القيادة وريادة الأعمال</div>
+      <div class="bot-d">مستشارك في القيادة وريادة الأعمال — يفكر معك في استراتيجيتك ويمنحك رؤية أوضح.</div>
+      <div class="bot-tags">
+        <span class="tcan">استراتيجية أعمال</span><span class="tcan">قيادة الفريق</span><span class="tcan">ريادة</span>
+        <span class="tcant">ضمان ربح</span>
+      </div>
+      <div class="bot-disc">⚠️ استشارات توجيهية. القرارات المالية تحتاج خبيراً مرخصاً.</div>
+      <a href="rawed.html" target="_blank" class="bot-link">تحدث مع رواد ←</a>
+    </div>
+
+    <!-- بصيرة -->
+    <div class="bot" style="--bc:var(--sky)">
+      <span class="bot-em">🔍</span>
+      <div class="bot-name">بصيرة</div>
+      <div class="bot-en">BASIRA · التحليل السلوكي</div>
+      <div class="bot-d">تساعدك تقرأ السلوك البشري وتفهم دوافع الناس من حولك بعين علم النفس.</div>
+      <div class="bot-tags">
+        <span class="tcan">تحليل سلوكي</span><span class="tcan">علم نفس جنائي</span><span class="tcan">لغة الجسد</span>
+        <span class="tcant">تشخيص نفسي</span>
+      </div>
+      <div class="bot-disc">⚠️ للتوجيه المعرفي فقط. ليست بديلاً عن الطبيب النفسي.</div>
+      <a href="basira.html" target="_blank" class="bot-link">تحدث مع بصيرة ←</a>
+    </div>
+
+    <!-- رُشد -->
+    <div class="bot" style="--bc:var(--sage)">
+      <span class="bot-em">🌱</span>
+      <div class="bot-name">رُشد</div>
+      <div class="bot-en">RUSHD · أفضل نسخة منك</div>
+      <div class="bot-d">مرشدك لبناء أفضل نسخة منك — يغيّر عادة في ٤٠ يوم، يبني أهدافاً تنعكس على ذاتك وعائلتك ومجتمعك. من المراهق حتى الكبير.</div>
+      <div class="bot-tags">
+        <span class="tcan">تغيير عادات ٤٠ يوم</span><span class="tcan">بناء الشخصية</span><span class="tcan">أهداف حياتية</span>
+        <span class="tcant">علاج نفسي</span>
+      </div>
+      <div class="bot-disc">⚠️ للإرشاد والتطوير. الحالات النفسية العميقة تحتاج متخصصاً معتمداً.</div>
+      <a href="rushd.html" target="_blank" class="bot-link">تحدث مع رُشد ←</a>
+    </div>
+
+    <!-- وصال -->
+    <div class="bot" style="--bc:var(--rose)">
+      <span class="bot-em">💞</span>
+      <div class="bot-name">وصال</div>
+      <div class="bot-en">WISAL · العلاقات والتواصل</div>
+      <div class="bot-d">تفهم لغة العلاقات وتساعدك تبني تواصلاً أعمق مع من تحبهم.</div>
+      <div class="bot-tags">
+        <span class="tcan">علاقات عائلية</span><span class="tcan">صداقات</span><span class="tcan">تواصل فعّال</span>
+        <span class="tcant">وساطة قانونية</span>
+      </div>
+      <div class="bot-disc">⚠️ للتوجيه العلائقي. الأزمات العائلية الحادة تحتاج مستشاراً.</div>
+      <a href="wisal.html" target="_blank" class="bot-link">تحدث مع وصال ←</a>
+    </div>
+
+    <!-- فن -->
+    <div class="bot" style="--bc:var(--peach)">
+      <span class="bot-em">🎨</span>
+      <div class="bot-name">فن</div>
+      <div class="bot-en">FAN · الإبداع والفنون</div>
+      <div class="bot-d">رفيقك الإبداعي — يلهمك ويساعدك تكسر الروتين وتعبر عن نفسك بأشكال فنية متعددة.</div>
+      <div class="bot-tags">
+        <span class="tcan">إلهام إبداعي</span><span class="tcan">فنون بصرية</span><span class="tcan">علاج بالفن</span>
+        <span class="tcant">تنفيذ أعمال</span>
+      </div>
+      <div class="bot-disc">⚠️ للإلهام والتوجيه. التنفيذ الاحترافي يحتاج فناناً متخصصاً.</div>
+      <a href="fan.html" target="_blank" class="bot-link">تحدث مع فن ←</a>
+    </div>
+
+    <!-- ذوق -->
+    <div class="bot" style="--bc:var(--amber)">
+      <span class="bot-em">🍳</span>
+      <div class="bot-name">ذوق</div>
+      <div class="bot-en">THOQ · الطبخ وأسلوب الحياة</div>
+      <div class="bot-d">يساعدك تطور ذوقك في الطعام وأسلوب حياتك — من الوصفات للعادات الصحية اليومية.</div>
+      <div class="bot-tags">
+        <span class="tcan">وصفات</span><span class="tcan">تغذية</span><span class="tcan">أسلوب حياة</span>
+        <span class="tcant">تشخيص غذائي طبي</span>
+      </div>
+      <div class="bot-disc">⚠️ للتوجيه العام. الحميات الطبية تحتاج أخصائي تغذية.</div>
+      <a href="thoq.html" target="_blank" class="bot-link">تحدث مع ذوق ←</a>
+    </div>
+
+    <!-- آمِنة -->
+    <div class="bot" style="--bc:var(--sage)">
+      <span class="bot-em">🌿</span>
+      <div class="bot-name">آمِنة</div>
+      <div class="bot-en">AMENA · للمرأة المسلمة</div>
+      <div class="bot-d">رفيقة روحية للمرأة المسلمة — تسير معك في رحلتك الإيمانية بفهم وعمق.</div>
+      <div class="bot-tags">
+        <span class="tcan">توجيه إسلامي</span><span class="tcan">دعاء وذكر</span><span class="tcan">تزكية النفس</span>
+        <span class="tcant">فتوى دينية رسمية</span>
+      </div>
+      <div class="bot-disc">⚠️ للإلهام الروحي. الفتاوى الرسمية تحتاج عالماً شرعياً.</div>
+      <a href="amena.html" target="_blank" class="bot-link">تحدث مع آمِنة ←</a>
+    </div>
+
+    <!-- آمان -->
+    <div class="bot" style="--bc:var(--lavender)">
+      <span class="bot-em">🕌</span>
+      <div class="bot-name">آمان</div>
+      <div class="bot-en">AMAN · للرجل المسلم</div>
+      <div class="bot-d">رفيق روحي للرجل المسلم — يدعمك في بناء شخصيتك الإيمانية وتحقيق التوازن.</div>
+      <div class="bot-tags">
+        <span class="tcan">توجيه إسلامي</span><span class="tcan">بناء شخصية</span><span class="tcan">تأمل وذكر</span>
+        <span class="tcant">فتوى دينية رسمية</span>
+      </div>
+      <div class="bot-disc">⚠️ للإلهام الروحي. الفتاوى الرسمية تحتاج عالماً شرعياً.</div>
+      <a href="aman.html" target="_blank" class="bot-link">تحدث مع آمان ←</a>
+    </div>
+
+    <!-- محتوى -->
+    <div class="bot" style="--bc:var(--rose)">
+      <span class="bot-em">📱</span>
+      <div class="bot-name">محتوى</div>
+      <div class="bot-en">MUHTAWA · صناعة المحتوى</div>
+      <div class="bot-d">يساعدك تبني حضوراً رقمياً قوياً — أفكار، استراتيجية، وصياغة محتوى يؤثر.</div>
+      <div class="bot-tags">
+        <span class="tcan">أفكار محتوى</span><span class="tcan">سوشيال ميديا</span><span class="tcan">صياغة</span>
+        <span class="tcant">تصميم ملفات</span>
+      </div>
+      <div class="bot-disc">⚠️ للتوجيه الاستراتيجي. التصميم والتنفيذ يحتاجان متخصصاً.</div>
+      <a href="muhtawa.html" target="_blank" class="bot-link">تحدث مع محتوى ←</a>
+    </div>
+
+    <!-- صوت — FIX 2: صوت.html → sawt.html -->
+    <div class="bot" style="--bc:#00ffe1">
+      <span class="bot-em">🎙️</span>
+      <div class="bot-name">صوت</div>
+      <div class="bot-en">SAWT · أكاديمية الصوت والإلقاء</div>
+      <div class="bot-d">مدرّبك الصوتي الذكي — يطوّر نبرتك، إلقاءك، وحضورك الصوتي خطوة بخطوة.</div>
+      <div class="bot-tags">
+        <span class="tcan">تدريب صوتي</span><span class="tcan">فن الإلقاء</span><span class="tcan">الحضور الصوتي</span>
+        <span class="tcant">علاج نطق طبي</span>
+      </div>
+      <div class="bot-disc">⚠️ للتطوير والتدريب. اضطرابات النطق تحتاج أخصائياً طبياً.</div>
+      <a href="sawt.html" target="_blank" class="bot-link">تحدث مع صوت ←</a>
+    </div>
+
+    <!-- مثابرة — FIX 2: مثابرة.html → muthab.html -->
+    <div class="bot" style="--bc:#A78BFA">
+      <span class="bot-em">🔥</span>
+      <div class="bot-name">مثابرة</div>
+      <div class="bot-en">MUTHAB · الظهور والثقة والإقدام</div>
+      <div class="bot-d">رفيقك في رحلة الظهور — يكسر مخاوفك، يبني ثقتك، ويدفعك للإقدام بجرأة وهدوء.</div>
+      <div class="bot-tags">
+        <span class="tcan">بناء الثقة</span><span class="tcan">التغلب على الخوف</span><span class="tcan">الظهور العام</span>
+        <span class="tcant">علاج نفسي</span>
+      </div>
+      <div class="bot-disc">⚠️ للتحفيز والإرشاد. الحالات النفسية العميقة تحتاج متخصصاً.</div>
+      <a href="muthab.html" target="_blank" class="bot-link">تحدث مع مثابرة ←</a>
+    </div>
+
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing" class="sec z">
+  <div class="reveal">
+    <span class="eye">✦ ابدأ رحلتك</span>
+    <h2 class="sh">اختر ما يناسبك</h2>
+    <p class="sd">جرب أسبوعاً أو التزم بشهر — كل الخيارات تفتح لك عالم رفاقك.</p>
+  </div>
+
+  <div class="price-tabs reveal" id="ptabs">
+    <button class="ptab on" onclick="showP('one')">بوت واحد</button>
+    <button class="ptab" onclick="showP('three')">٣ بوتات</button>
+  </div>
+
+  <!-- بوت واحد -->
+  <div id="p-one" class="pgrid reveal">
+    <div class="pcard">
+      <div class="pplan">تجريبي</div>
+      <div class="pamount">٣</div>
+      <div class="pperiod">د.ك / أسبوع</div>
+      <div class="psave">جرب رفيقك المفضل</div>
+      <div class="pfeats">
+        <div class="pfeat">بوت واحد تختاره</div>
+        <div class="pfeat">وصول كامل أسبوع</div>
+        <div class="pfeat">متاح ٢٤/٧</div>
+      </div>
+      <button class="pbtn ghost" onclick="location.href='https://fashionection.com'">ابدأ التجربة ←</button>
+    </div>
+    <div class="pcard feat">
+      <div class="pbadge">الأكثر طلباً ✦</div>
+      <div class="pplan">شهري</div>
+      <div class="pamount">١٢</div>
+      <div class="pperiod">د.ك / شهر</div>
+      <div class="psave">أقل من وجبة في مطعم</div>
+      <div class="pfeats">
+        <div class="pfeat">بوت واحد تختاره</div>
+        <div class="pfeat">وصول كامل شهر</div>
+        <div class="pfeat">متاح ٢٤/٧</div>
+        <div class="pfeat">تحديثات مستمرة</div>
+      </div>
+      <button class="pbtn" onclick="location.href='https://fashionection.com'">اشترك الآن ←</button>
+    </div>
+    <div class="pcard">
+      <div class="pplan">للمزيد</div>
+      <div style="font-size:42px;margin:12px 0;">✦</div>
+      <div class="pperiod" style="font-size:16px;color:var(--text);font-weight:700;">باقات أكثر وخيارات مرنة</div>
+      <div class="psave">زيارة الموقع لمعرفة التفاصيل</div>
+      <div class="pfeats">
+        <div class="pfeat">باقات سنوية</div>
+        <div class="pfeat">باقات عائلية</div>
+        <div class="pfeat">باقات الشركات</div>
+      </div>
+      <button class="pbtn more" onclick="window.open('https://fashionection.com','_blank')">زيارة الموقع ←</button>
+    </div>
+  </div>
+
+  <!-- ٣ بوتات -->
+  <div id="p-three" class="pgrid reveal" style="display:none">
+    <div class="pcard">
+      <div class="pplan">تجريبي</div>
+      <div class="pamount">٦</div>
+      <div class="pperiod">د.ك / أسبوع</div>
+      <div class="psave">جرب ٣ رفاق تختارهم</div>
+      <div class="pfeats">
+        <div class="pfeat">٣ بوتات تختارهم</div>
+        <div class="pfeat">وصول كامل أسبوع</div>
+        <div class="pfeat">متاح ٢٤/٧</div>
+      </div>
+      <button class="pbtn ghost" onclick="location.href='https://fashionection.com'">ابدأ التجربة ←</button>
+    </div>
+    <div class="pcard feat">
+      <div class="pbadge">الأذكى ✦</div>
+      <div class="pplan">شهري</div>
+      <div class="pamount">٢٥</div>
+      <div class="pperiod">د.ك / شهر</div>
+      <div class="psave">٨.٣ د.ك للبوت — توفير ٣١٪</div>
+      <div class="pfeats">
+        <div class="pfeat">٣ بوتات تختارهم</div>
+        <div class="pfeat">وصول كامل شهر</div>
+        <div class="pfeat">متاح ٢٤/٧</div>
+        <div class="pfeat">تحديثات مستمرة</div>
+        <div class="pfeat">أولوية في الميزات الجديدة</div>
+      </div>
+      <button class="pbtn" onclick="location.href='https://fashionection.com'">اشترك الآن ←</button>
+    </div>
+    <div class="pcard">
+      <div class="pplan">للمزيد</div>
+      <div style="font-size:42px;margin:12px 0;">✦</div>
+      <div class="pperiod" style="font-size:16px;color:var(--text);font-weight:700;">الكل أو الشركات</div>
+      <div class="psave">أسعار خاصة للمؤسسات</div>
+      <div class="pfeats">
+        <div class="pfeat">الـ ١٢ بوتاً كاملين</div>
+        <div class="pfeat">باقات سنوية</div>
+        <div class="pfeat">باقات مؤسسية</div>
+      </div>
+      <button class="pbtn more" onclick="window.open('https://fashionection.com','_blank')">زيارة الموقع ←</button>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="z">
+  <div class="flogo">مشروع الجماد الحي ✦</div>
+  <div style="font-size:14px;color:var(--muted);max-width:500px;margin:0 auto;line-height:1.7;">
+    تحويل المنتجات العادية لتجارب ذكية تلمس الروح والعقل.
+  </div>
+  <div class="fcopy">© حقوق محفوظة لـ فجر عبدالرحمن المسلم — مؤسسة مشروع الجماد الحي</div>
+</footer>
+
+<script>
+// Scroll reveal
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('on'); });
+}, {threshold:.1});
+document.querySelectorAll('.reveal').forEach(r => obs.observe(r));
+
+// Pricing tabs
+function showP(t) {
+  document.getElementById('p-one').style.display = t==='one' ? 'grid' : 'none';
+  document.getElementById('p-three').style.display = t==='three' ? 'grid' : 'none';
+  document.querySelectorAll('.ptab').forEach((b,i) => b.classList.toggle('on', (t==='one'&&i===0)||(t==='three'&&i===1)));
+}
+</script>
+</body>
+</html>
