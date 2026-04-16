@@ -1,8 +1,8 @@
-{
-  "name": "fajeralmusallam-aibots",
-  "version": "1.0.0",
-  "dependencies": {
-    "@anthropic-ai/sdk": "^0.20.0",
-    "docx": "^8.5.0"
-  }
-}
+[build]
+  publish = "."
+[functions]
+  directory = "netlify/functions"
+[functions."chat"]
+  timeout = 26
+[functions."sawt"]
+  timeout = 26
