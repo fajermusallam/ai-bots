@@ -1,8 +1,0 @@
-[build]
-  publish = "."
-[functions]
-  directory = "netlify/functions"
-[functions."chat"]
-  timeout = 26
-[functions."sawt"]
-  timeout = 26
