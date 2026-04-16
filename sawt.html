@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" id="htmlRoot">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>صوت — SAWT Voice Academy</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&family=Orbitron:wght@400;700;900&family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --void: #020408;--deep: #060d1a;--space: #0a1628;
+  --nebula1: #6e00ff;--nebula2: #ff006e;--nebula3: #00d4ff;
+  --nebula4: #ff8c00;--gold: #ffd700;--cyan: #00ffe1;
+  --magenta: #ff00aa;--violet: #7b2fff;
+  --text: #e8eeff;--text2: rgba(200,210,255,0.6);
+  --glass: rgba(10,22,40,0.8);--glass2: rgba(110,0,255,0.08);
+  --glow-v: rgba(110,0,255,0.4);--glow-c: rgba(0,212,255,0.4);--glow-m: rgba(255,0,170,0.4);
+}
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+body { font-family:'Tajawal',sans-serif; background:var(--void); color:var(--text); min-height:100vh; overflow-x:hidden; }
+#stars { position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden; }
+.star { position:absolute; border-radius:50%; animation:twinkle linear infinite; }
+@keyframes twinkle { 0%,100%{opacity:0.2;transform:scale(1);}50%{opacity:1;transform:scale(1.4);} }
+body::before {
+  content:''; position:fixed; inset:0;
+  background:radial-gradient(ellipse at 15% 25%,rgba(110,0,255,0.18) 0%,transparent 55%),radial-gradient(ellipse at 85% 70%,rgba(255,0,110,0.14) 0%,transparent 55%),radial-gradient(ellipse at 50% 50%,rgba(0,212,255,0.06) 0%,transparent 70%),radial-gradient(ellipse at 70% 10%,rgba(255,140,0,0.1) 0%,transparent 45%);
+  pointer-events:none; z-index:0; animation:nebulaShift 20s ease-in-out infinite alternate;
+}
+@keyframes nebulaShift { 0%{filter:hue-rotate(0deg);}100%{filter:hue-rotate(30deg);} }
+#cursor { position:fixed; width:20px; height:20px; pointer-events:none; z-index:9999; mix-blend-mode:screen; }
+#cursor::before { content:''; position:absolute; inset:0; border-radius:50%; background:radial-gradient(circle,var(--cyan),var(--violet)); animation:cursorPulse 1.5s ease-in-out infinite; }
+#cursor::after { content:''; position:absolute; inset:-6px; border-radius:50%; border:1px solid rgba(0,255,225,0.3); animation:cursorRing 1.5s ease-in-out infinite reverse; }
+@keyframes cursorPulse{0%,100%{transform:scale(1);opacity:0.9;}50%{transform:scale(0.6);opacity:0.5;}}
+@keyframes cursorRing{0%,100%{transform:scale(1);opacity:0.4;}50%{transform:scale(1.5);opacity:0.1;}}
+.screen { display:none; position:relative; z-index:1; min-height:100vh; }
+.screen.active { display:flex; flex-direction:column; }
+#screenLanding { align-items:center; justify-content:center; padding:20px; }
+.logo-wrap { text-align:center; margin-bottom:48px; }
+.logo-orb { width:140px; height:140px; margin:0 auto 24px; position:relative; background:radial-gradient(circle at 35% 35%,var(--cyan),var(--violet) 50%,var(--magenta)); border-radius:50%; filter:blur(2px); animation:orbSpin 8s linear infinite; display:flex; align-items:center; justify-content:center; }
+@keyframes orbSpin{to{filter:hue-rotate(360deg) blur(2px);}}
+.logo-letter { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-family:'Tajawal',sans-serif; font-size:72px; font-weight:900; color:white; text-shadow:0 0 30px var(--cyan),0 0 60px var(--violet); z-index:2; filter:blur(0); }
+.logo-title { font-family:'Orbitron',sans-serif; font-size:clamp(28px,6vw,48px); font-weight:900; letter-spacing:8px; background:linear-gradient(90deg,var(--cyan),var(--violet),var(--magenta),var(--gold)); background-size:300%; -webkit-background-clip:text; -webkit-text-fill-color:transparent; animation:gradShift 4s linear infinite; }
+@keyframes gradShift{0%{background-position:0%;}100%{background-position:300%;}}
+.logo-sub { font-size:14px; color:var(--text2); letter-spacing:4px; margin-top:8px; font-family:'Space Grotesk',sans-serif; }
+.code-card { background:var(--glass); border:1px solid rgba(110,0,255,0.3); border-radius:24px; padding:40px; width:min(440px,90vw); backdrop-filter:blur(20px); box-shadow:0 0 60px rgba(110,0,255,0.15),inset 0 1px 0 rgba(255,255,255,0.05); }
+.code-label { text-align:center; font-size:14px; color:var(--text2); letter-spacing:2px; margin-bottom:20px; font-family:'Space Grotesk',sans-serif; }
+.lang-toggle { display:flex; gap:8px; justify-content:center; margin-bottom:24px; }
+.lang-btn { padding:6px 18px; border-radius:20px; border:1px solid rgba(0,255,225,0.3); background:transparent; color:var(--text2); cursor:pointer; font-family:'Space Grotesk',sans-serif; font-size:13px; transition:all 0.2s; }
+.lang-btn.active { background:rgba(0,255,225,0.15); border-color:var(--cyan); color:var(--cyan); }
+.code-input { width:100%; background:rgba(255,255,255,0.04); border:1px solid rgba(110,0,255,0.4); border-radius:12px; padding:16px 20px; color:var(--text); font-family:'Orbitron',sans-serif; font-size:18px; letter-spacing:4px; text-align:center; outline:none; transition:all 0.3s; }
+.code-input:focus { border-color:var(--cyan); box-shadow:0 0 20px rgba(0,255,225,0.2); }
+.code-input::placeholder { color:rgba(200,210,255,0.3); font-size:13px; letter-spacing:2px; }
+.enter-btn { width:100%; margin-top:16px; padding:16px; border-radius:12px; border:none; cursor:pointer; background:linear-gradient(135deg,var(--violet),var(--nebula2)); color:white; font-weight:700; font-size:16px; font-family:'Tajawal',sans-serif; letter-spacing:2px; box-shadow:0 4px 24px rgba(110,0,255,0.4); transition:all 0.3s; position:relative; overflow:hidden; }
+.enter-btn::before { content:''; position:absolute; inset:0; background:linear-gradient(135deg,var(--cyan),var(--violet)); opacity:0; transition:opacity 0.3s; }
+.enter-btn:hover::before { opacity:1; }
+.enter-btn:hover { transform:translateY(-2px); box-shadow:0 8px 32px rgba(110,0,255,0.6); }
+.enter-btn span { position:relative; z-index:1; }
+.err-msg { color:#ff6b6b; text-align:center; font-size:13px; margin-top:10px; display:none; }
+.landing-footer { margin-top:32px; text-align:center; font-size:11px; color:rgba(200,210,255,0.3); font-family:'Space Grotesk',sans-serif; letter-spacing:2px; }
+#screenApp { flex-direction:column; }
+.topbar { display:flex; align-items:center; justify-content:space-between; padding:14px 20px; background:rgba(6,13,26,0.9); border-bottom:1px solid rgba(110,0,255,0.2); backdrop-filter:blur(20px); position:sticky; top:0; z-index:100; }
+.tb-logo { font-family:'Orbitron',sans-serif; font-weight:900; font-size:20px; background:linear-gradient(90deg,var(--cyan),var(--violet)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; letter-spacing:3px; }
+.tb-right { display:flex; align-items:center; gap:12px; }
+.tb-lang { padding:5px 14px; border-radius:16px; border:1px solid rgba(0,255,225,0.3); background:transparent; color:var(--cyan); font-size:12px; cursor:pointer; font-family:'Space Grotesk',sans-serif; transition:all 0.2s; }
+.tb-lang:hover { background:rgba(0,255,225,0.1); }
+.tb-exit { padding:5px 14px; border-radius:16px; border:1px solid rgba(255,0,110,0.3); background:transparent; color:rgba(255,100,150,0.8); font-size:12px; cursor:pointer; transition:all 0.2s; }
+.tb-exit:hover { background:rgba(255,0,110,0.1); }
+.avatar-bar { background:linear-gradient(135deg,rgba(110,0,255,0.15),rgba(0,212,255,0.08)); border-bottom:1px solid rgba(110,0,255,0.15); padding:20px; display:flex; align-items:center; gap:16px; }
+.sawt-avatar { width:56px; height:56px; border-radius:50%; flex-shrink:0; background:radial-gradient(circle at 35% 35%,var(--cyan),var(--violet),var(--magenta)); display:flex; align-items:center; justify-content:center; font-size:26px; font-weight:900; color:white; box-shadow:0 0 24px rgba(110,0,255,0.5); animation:avatarPulse 3s ease-in-out infinite; font-family:'Tajawal',sans-serif; }
+@keyframes avatarPulse{0%,100%{box-shadow:0 0 24px rgba(110,0,255,0.5);}50%{box-shadow:0 0 40px rgba(0,212,255,0.7),0 0 60px rgba(110,0,255,0.3);}}
+.sawt-info { flex:1; }
+.sawt-name { font-weight:700; font-size:18px; background:linear-gradient(90deg,var(--cyan),var(--gold)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+.sawt-status { font-size:12px; color:var(--text2); margin-top:2px; font-family:'Space Grotesk',sans-serif; }
+.status-dot { display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--cyan); margin-left:6px; animation:blink 2s infinite; }
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:0.2;}}
+.mode-tabs { display:flex; gap:0; background:rgba(6,13,26,0.8); border-bottom:1px solid rgba(110,0,255,0.2); overflow-x:auto; scrollbar-width:none; }
+.mode-tabs::-webkit-scrollbar { display:none; }
+.mode-tab { flex:1; min-width:80px; padding:12px 8px; text-align:center; cursor:pointer; font-size:12px; color:var(--text2); border-bottom:2px solid transparent; transition:all 0.25s; white-space:nowrap; font-family:'Tajawal',sans-serif; }
+.mode-tab:hover { color:var(--text); background:rgba(110,0,255,0.06); }
+.mode-tab.active { color:var(--cyan); border-bottom-color:var(--cyan); background:rgba(0,212,255,0.05); }
+.tab-icon { font-size:18px; display:block; margin-bottom:3px; }
+.content-area { flex:1; overflow:hidden; display:flex; flex-direction:column; }
+.tab-panel { display:none; flex:1; flex-direction:column; overflow:hidden; }
+.tab-panel.active { display:flex; }
+.chat-area { flex:1; overflow-y:auto; padding:16px; display:flex; flex-direction:column; gap:12px; scroll-behavior:smooth; }
+.chat-area::-webkit-scrollbar { width:3px; }
+.chat-area::-webkit-scrollbar-thumb { background:rgba(110,0,255,0.4); border-radius:2px; }
+.bubble { max-width:80%; padding:12px 16px; border-radius:18px; line-height:1.7; font-size:14px; animation:fadeUp 0.3s ease; }
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+.bubble.sawt { align-self:flex-end; background:linear-gradient(135deg,rgba(110,0,255,0.25),rgba(0,212,255,0.15)); border:1px solid rgba(110,0,255,0.3); border-bottom-right-radius:4px; box-shadow:0 4px 16px rgba(110,0,255,0.15); }
+.bubble.user { align-self:flex-start; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); border-bottom-left-radius:4px; }
+.bubble-name { font-size:11px; margin-bottom:5px; opacity:0.6; font-family:'Space Grotesk',sans-serif; letter-spacing:1px; }
+.typing-ind { align-self:flex-end; padding:14px 18px; }
+.typing-dots { display:flex; gap:4px; align-items:center; }
+.typing-dots span { width:7px; height:7px; border-radius:50%; background:var(--cyan); opacity:0.6; animation:dotBounce 1.2s ease-in-out infinite; }
+.typing-dots span:nth-child(2){animation-delay:.2s;} .typing-dots span:nth-child(3){animation-delay:.4s;}
+@keyframes dotBounce{0%,60%,100%{transform:translateY(0);}30%{transform:translateY(-8px);}}
+.input-zone { padding:12px 16px; background:rgba(6,13,26,0.95); border-top:1px solid rgba(110,0,255,0.2); }
+.voice-wave { display:flex; align-items:center; justify-content:center; gap:3px; height:28px; margin-bottom:10px; }
+.wave-bar { width:3px; background:rgba(0,255,225,0.4); border-radius:2px; height:4px; transition:height 0.1s; }
+.input-row { display:flex; gap:8px; align-items:flex-end; }
+.text-input { flex:1; background:rgba(255,255,255,0.05); border:1px solid rgba(110,0,255,0.3); border-radius:20px; padding:10px 16px; color:var(--text); font-family:'Tajawal',sans-serif; font-size:14px; resize:none; outline:none; max-height:100px; min-height:42px; line-height:1.5; transition:border-color 0.3s; }
+.text-input:focus { border-color:var(--cyan); }
+.text-input::placeholder { color:rgba(200,210,255,0.3); }
+.icon-btn { width:42px; height:42px; border-radius:50%; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:18px; transition:all 0.2s; flex-shrink:0; }
+.mic-btn { background:linear-gradient(135deg,var(--violet),var(--nebula2)); box-shadow:0 0 16px rgba(110,0,255,0.4); }
+.mic-btn:hover { transform:scale(1.08); box-shadow:0 0 24px rgba(110,0,255,0.6); }
+.mic-btn.listening { background:linear-gradient(135deg,#ff2244,#ff006e); animation:listenPulse 0.8s ease-in-out infinite alternate; }
+@keyframes listenPulse{from{box-shadow:0 0 16px rgba(255,0,110,0.5);}to{box-shadow:0 0 32px rgba(255,0,110,0.9),0 0 0 8px rgba(255,0,110,0.1);}}
+.send-btn { background:linear-gradient(135deg,var(--cyan),var(--violet)); box-shadow:0 0 16px rgba(0,212,255,0.3); }
+.send-btn:hover { transform:scale(1.08); }
+.upload-btn { background:rgba(255,140,0,0.2); border:1px solid rgba(255,140,0,0.3); color:var(--nebula4); }
+.upload-btn:hover { background:rgba(255,140,0,0.3); }
+.perf-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; padding:16px; overflow-y:auto; flex:1; }
+.perf-card { background:var(--glass); border:1px solid rgba(110,0,255,0.2); border-radius:16px; padding:20px; cursor:pointer; transition:all 0.3s; text-align:center; }
+.perf-card:hover { transform:translateY(-4px); border-color:var(--cyan); box-shadow:0 8px 32px rgba(0,212,255,0.2); }
+.perf-icon { font-size:36px; margin-bottom:10px; display:block; }
+.perf-name { font-weight:700; font-size:14px; margin-bottom:6px; }
+.perf-desc { font-size:12px; color:var(--text2); line-height:1.5; }
+.content-panel { padding:16px; overflow-y:auto; flex:1; display:flex; flex-direction:column; gap:12px; }
+.content-types { display:flex; gap:8px; flex-wrap:wrap; }
+.ct-btn { padding:8px 16px; border-radius:20px; border:1px solid rgba(110,0,255,0.3); background:transparent; color:var(--text2); cursor:pointer; font-size:13px; font-family:'Tajawal',sans-serif; transition:all 0.2s; }
+.ct-btn.active,.ct-btn:hover { background:rgba(110,0,255,0.2); border-color:var(--violet); color:var(--text); }
+.content-input-area { background:rgba(255,255,255,0.03); border:1px solid rgba(110,0,255,0.2); border-radius:16px; padding:16px; flex:1; }
+.content-textarea { width:100%; background:transparent; border:none; outline:none; color:var(--text); font-family:'Tajawal',sans-serif; font-size:14px; resize:none; min-height:80px; line-height:1.7; }
+.content-textarea::placeholder { color:rgba(200,210,255,0.3); }
+.gen-btn { padding:12px 24px; border-radius:12px; border:none; cursor:pointer; background:linear-gradient(135deg,var(--magenta),var(--violet)); color:white; font-family:'Tajawal',sans-serif; font-weight:700; font-size:14px; width:100%; box-shadow:0 4px 20px rgba(255,0,170,0.3); transition:all 0.3s; }
+.gen-btn:hover { transform:translateY(-2px); box-shadow:0 8px 30px rgba(255,0,170,0.5); }
+.content-output { background:rgba(0,212,255,0.05); border:1px solid rgba(0,212,255,0.2); border-radius:16px; padding:16px; font-size:14px; line-height:1.8; white-space:pre-wrap; min-height:80px; display:none; position:relative; }
+.copy-btn { position:absolute; top:10px; left:10px; padding:4px 12px; border-radius:8px; border:none; cursor:pointer; background:rgba(0,212,255,0.2); color:var(--cyan); font-size:12px; }
+.files-panel { padding:16px; overflow-y:auto; flex:1; display:flex; flex-direction:column; gap:12px; }
+.drop-zone { border:2px dashed rgba(110,0,255,0.4); border-radius:20px; padding:40px 20px; text-align:center; cursor:pointer; transition:all 0.3s; background:rgba(110,0,255,0.03); }
+.drop-zone:hover,.drop-zone.dragover { border-color:var(--cyan); background:rgba(0,212,255,0.05); }
+.drop-icon { font-size:40px; display:block; margin-bottom:12px; }
+.drop-text { font-size:14px; color:var(--text2); }
+.file-list { display:flex; flex-direction:column; gap:8px; }
+.file-item { display:flex; align-items:center; gap:12px; background:rgba(255,255,255,0.04); border:1px solid rgba(110,0,255,0.15); border-radius:12px; padding:12px 16px; }
+.file-icon { font-size:24px; }
+.file-info { flex:1; min-width:0; }
+.file-name { font-size:13px; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.file-size { font-size:11px; color:var(--text2); }
+.file-actions { display:flex; gap:6px; }
+.fa-btn { padding:5px 10px; border-radius:8px; border:none; cursor:pointer; font-size:12px; transition:all 0.2s; }
+.fa-play { background:rgba(0,212,255,0.2); color:var(--cyan); }
+.fa-analyze { background:rgba(110,0,255,0.2); color:var(--violet); }
+.fa-delete { background:rgba(255,0,110,0.15); color:#ff6b9d; }
+.exercise-box { background:linear-gradient(135deg,rgba(110,0,255,0.15),rgba(0,212,255,0.08)); border:1px solid rgba(110,0,255,0.3); border-radius:16px; padding:16px; margin-top:8px; }
+.ex-title { font-size:13px; color:var(--cyan); font-weight:700; margin-bottom:8px; }
+.ex-steps { font-size:13px; color:var(--text2); line-height:1.8; }
+.toast { position:fixed; bottom:80px; left:50%; transform:translateX(-50%); background:rgba(0,212,255,0.15); border:1px solid var(--cyan); backdrop-filter:blur(12px); border-radius:12px; padding:10px 20px; font-size:13px; color:var(--cyan); z-index:999; opacity:0; transition:opacity 0.3s; pointer-events:none; white-space:nowrap; }
+.toast.show { opacity:1; }
+@media(max-width:400px){.perf-grid{grid-template-columns:1fr;}.bubble{max-width:92%;}}
+audio { width:100%; margin-top:8px; filter:invert(1) hue-rotate(180deg); opacity:0.7; }
+</style>
+</head>
+<body>
+<div id="cursor"></div>
+<div id="stars"></div>
+<div class="toast" id="toast"></div>
+
+<!-- SCREEN 1: LANDING -->
+<div class="screen active" id="screenLanding">
+  <div style="text-align:center;width:100%;">
+    <div class="logo-wrap">
+      <div class="logo-orb" style="position:relative;display:flex;align-items:center;justify-content:center;">
+        <div class="logo-letter">صوت</div>
+      </div>
+      <div class="logo-title">SAWT</div>
+      <div class="logo-sub" id="landSub">VOICE ACADEMY · أكاديمية الصوت</div>
+    </div>
+    <div class="code-card">
+      <div class="lang-toggle">
+        <button class="lang-btn active" onclick="setLang('ar')">العربية</button>
+        <button class="lang-btn" onclick="setLang('en')">English</button>
+      </div>
+      <div class="code-label" id="codeLabel">أدخل كود الوصول</div>
+      <input class="code-input" id="codeInput" placeholder="SW-XXXX-XXXX"
+        oninput="this.value=this.value.toUpperCase()" autocomplete="off" spellcheck="false">
+      <button class="enter-btn" onclick="enterCode()">
+        <span id="enterBtnTxt">دخول ← Enter</span>
+      </button>
+      <div class="err-msg" id="errMsg">كود غير صحيح — Invalid code</div>
+    </div>
+    <div class="landing-footer">© SAWT · مشروع الجماد الحي · فجر عبدالرحمن المسلم</div>
+  </div>
+</div>
+
+<!-- SCREEN 2: APP -->
+<div class="screen" id="screenApp">
+  <div class="topbar">
+    <div class="tb-logo">SAWT صوت</div>
+    <div class="tb-right">
+      <!-- ✅ FIX: زر TTS جديد -->
+      <button class="tb-lang" onclick="toggleTTS()" id="ttsToggle" title="تشغيل/إيقاف الصوت" style="font-size:16px;min-width:38px;">🔊</button>
+      <button class="tb-lang" onclick="toggleLang()" id="tbLangBtn">EN</button>
+      <button class="tb-exit" onclick="exitApp()" id="tbExitBtn">خروج</button>
+    </div>
+  </div>
+  <div class="avatar-bar">
+    <div class="sawt-avatar" id="sawtAvatar">🎙️</div>
+    <div class="sawt-info">
+      <div class="sawt-name" id="sawtName">صوت — مدرّب الأصوات</div>
+      <div class="sawt-status">
+        <span class="status-dot"></span>
+        <span id="sawtStatus">متصل · Online</span>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:flex-start;gap:4px;">
+      <div id="sessionBadge" style="font-size:10px;color:var(--text2);font-family:'Space Grotesk',sans-serif;"></div>
+      <div id="memoryBadge" style="display:none;font-size:11px;color:var(--cyan);font-family:'Space Grotesk',sans-serif;"></div>
+      <button onclick="clearMemory()" style="font-size:10px;color:rgba(255,0,110,0.5);background:none;border:none;cursor:pointer;font-family:'Tajawal',sans-serif;padding:0;">🧹 مسح الذاكرة</button>
+    </div>
+  </div>
+  <div class="mode-tabs">
+    <div class="mode-tab active" onclick="switchTab('training')" id="tab-training"><span class="tab-icon">🎙️</span><span id="tabTrain">تدريب</span></div>
+    <div class="mode-tab" onclick="switchTab('performance')" id="tab-performance"><span class="tab-icon">🎭</span><span id="tabPerf">أداء</span></div>
+    <div class="mode-tab" onclick="switchTab('singing')" id="tab-singing"><span class="tab-icon">🎵</span><span id="tabSing">غناء</span></div>
+    <div class="mode-tab" onclick="switchTab('content')" id="tab-content"><span class="tab-icon">📱</span><span id="tabCont">محتوى</span></div>
+    <div class="mode-tab" onclick="switchTab('files')" id="tab-files"><span class="tab-icon">📁</span><span id="tabFiles">ملفات</span></div>
+  </div>
+  <div class="content-area">
+    <!-- TRAINING TAB -->
+    <div class="tab-panel active" id="panel-training">
+      <div class="chat-area" id="chatArea">
+        <div class="bubble sawt" id="welcomeBubble">
+          <div class="bubble-name">🎙️ صوت</div>
+          <span id="welcomeMsg"></span>
+        </div>
+        <div class="bubble sawt" style="display:none" id="typingInd">
+          <div class="typing-dots"><span></span><span></span><span></span></div>
+        </div>
+      </div>
+      <div class="input-zone">
+        <div class="voice-wave" id="voiceWave">
+          <div class="wave-bar" id="wb1"></div><div class="wave-bar" id="wb2"></div>
+          <div class="wave-bar" id="wb3"></div><div class="wave-bar" id="wb4"></div>
+          <div class="wave-bar" id="wb5"></div><div class="wave-bar" id="wb6"></div>
+          <div class="wave-bar" id="wb7"></div><div class="wave-bar" id="wb8"></div>
+          <div class="wave-bar" id="wb9"></div><div class="wave-bar" id="wb10"></div>
+        </div>
+        <div id="transcriptPreview" style="font-size:12px;color:var(--text2);text-align:center;min-height:16px;margin-bottom:6px;"></div>
+        <div class="input-row">
+          <button class="icon-btn upload-btn" onclick="document.getElementById('audioUpload').click()" title="رفع ملف صوتي">📎</button>
+          <input type="file" id="audioUpload" accept="audio/*" style="display:none" onchange="handleAudioUpload(event)">
+          <textarea class="text-input" id="msgInput" rows="1"
+            placeholder="اكتب رسالتك..."
+            onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMsg();}"></textarea>
+          <button class="icon-btn mic-btn" id="micBtn" onclick="toggleMic()">🎙️</button>
+          <button class="icon-btn send-btn" onclick="sendMsg()">➤</button>
+        </div>
+      </div>
+    </div>
+    <!-- PERFORMANCE TAB -->
+    <div class="tab-panel" id="panel-performance">
+      <div class="perf-grid">
+        <div class="perf-card" onclick="startExercise('breath','perf')"><span class="perf-icon">🌬️</span><div class="perf-name">التنفس الصوتي</div><div class="perf-desc">تحكّم النفَس لصوت أقوى وأعمق</div></div>
+        <div class="perf-card" onclick="startExercise('projection','perf')"><span class="perf-icon">📢</span><div class="perf-name">الإسقاط الصوتي</div><div class="perf-desc">تقوية وإطلاق الصوت بثقة واتزان</div></div>
+        <div class="perf-card" onclick="startExercise('tone','perf')"><span class="perf-icon">🎚️</span><div class="perf-name">تعديل النبرة</div><div class="perf-desc">التحكّم في طبقات الصوت وتلوينه</div></div>
+        <div class="perf-card" onclick="startExercise('articulation','perf')"><span class="perf-icon">👄</span><div class="perf-name">الإفصاح والنطق</div><div class="perf-desc">وضوح الحروف والمقاطع في الكلام</div></div>
+        <div class="perf-card" onclick="startExercise('rhythm','perf')"><span class="perf-icon">⏱️</span><div class="perf-name">الإيقاع والتوقف</div><div class="perf-desc">إتقان توقيت الكلام وفن الصمت</div></div>
+        <div class="perf-card" onclick="startExercise('expression','perf')"><span class="perf-icon">🌊</span><div class="perf-name">التعبير العاطفي</div><div class="perf-desc">نقل المشاعر والمعاني عبر الصوت</div></div>
+        <div class="perf-card" onclick="startExercise('confidence','perf')"><span class="perf-icon">⚡</span><div class="perf-name">ثقة المتحدث</div><div class="perf-desc">بناء الحضور والهيبة أمام الجمهور</div></div>
+        <div class="perf-card" onclick="startExercise('storytelling','perf')"><span class="perf-icon">📖</span><div class="perf-name">فن السرد</div><div class="perf-desc">رواية القصص بصوت يأسر المستمع</div></div>
+        <div class="perf-card" onclick="startExercise('microphone','perf')"><span class="perf-icon">🎤</span><div class="perf-name">تقنية الميكروفون</div><div class="perf-desc">التعامل مع الميك باحتراف تام</div></div>
+        <div class="perf-card" onclick="startExercise('nerves','perf')"><span class="perf-icon">🧘</span><div class="perf-name">التغلب على التوتر</div><div class="perf-desc">تقنيات تهدئة الأعصاب قبل الأداء</div></div>
+        <div class="perf-card" onclick="startExercise('persuasion','perf')"><span class="perf-icon">💡</span><div class="perf-name">قوة الإقناع</div><div class="perf-desc">صوت يُقنع ويحرّك ويُلهم القرارات</div></div>
+        <div class="perf-card" onclick="startExercise('broadcasting','perf')"><span class="perf-icon">📻</span><div class="perf-name">أسلوب الإذاعة</div><div class="perf-desc">الصوت الإذاعي الاحترافي والمؤثر</div></div>
+      </div>
+      <div class="exercise-box" id="exerciseBox" style="margin:0 16px 16px;display:none;">
+        <div class="ex-title" id="exTitle">التمرين</div>
+        <div class="ex-steps" id="exSteps"></div>
+        <div id="exRef" style="margin-top:10px;font-size:11px;color:rgba(0,255,225,0.5);font-family:'Space Grotesk',sans-serif;border-top:1px solid rgba(0,255,225,0.1);padding-top:8px;"></div>
+        <!-- ✅ FIX: زر استماع للتمرين -->
+        <div style="display:flex;gap:8px;margin-top:12px;">
+          <button class="gen-btn" style="flex:3;" onclick="sendExerciseToChat()">تدرّب مع صوت ←</button>
+          <button class="gen-btn" style="flex:1;background:linear-gradient(135deg,var(--cyan),var(--violet));" onclick="speakExercise('exSteps')" title="استمع للتمرين">🔊</button>
+        </div>
+      </div>
+    </div>
+    <!-- SINGING TAB -->
+    <div class="tab-panel" id="panel-singing">
+      <div class="perf-grid">
+        <div class="perf-card" onclick="startExercise('warmup','sing')"><span class="perf-icon">🔥</span><div class="perf-name">الإحماء الصوتي</div><div class="perf-desc">تمارين إحماء احترافية قبل الغناء</div></div>
+        <div class="perf-card" onclick="startExercise('pitch','sing')"><span class="perf-icon">🎶</span><div class="perf-name">ضبط المقام</div><div class="perf-desc">دقة النغمات والنطاقات الصوتية</div></div>
+        <div class="perf-card" onclick="startExercise('resonance','sing')"><span class="perf-icon">🔔</span><div class="perf-name">الرنين الصوتي</div><div class="perf-desc">تطوير الرنين الصدري والرأسي</div></div>
+        <div class="perf-card" onclick="startExercise('maqam','sing')"><span class="perf-icon">🌙</span><div class="perf-name">المقامات العربية</div><div class="perf-desc">أساسيات المقامات الشرقية للصوت</div></div>
+        <div class="perf-card" onclick="startExercise('vibrato','sing')"><span class="perf-icon">〰️</span><div class="perf-name">الهزّة والتمديد</div><div class="perf-desc">فن الفيبراتو والمدود الصوتية</div></div>
+        <div class="perf-card" onclick="startExercise('range','sing')"><span class="perf-icon">📈</span><div class="perf-name">توسيع النطاق</div><div class="perf-desc">توسعة المساحة الصوتية الآمنة</div></div>
+        <div class="perf-card" onclick="startExercise('belting','sing')"><span class="perf-icon">💥</span><div class="perf-name">البيلتينج</div><div class="perf-desc">قوة الصوت العالي بأمان وتحكّم</div></div>
+        <div class="perf-card" onclick="startExercise('voicehealth','sing')"><span class="perf-icon">🛡️</span><div class="perf-name">صحة الصوت</div><div class="perf-desc">حماية الحبال الصوتية وصون الصوت</div></div>
+        <div class="perf-card" onclick="startExercise('arabicsong','sing')"><span class="perf-icon">🌹</span><div class="perf-name">الغناء العربي الأصيل</div><div class="perf-desc">خصائص الطرب والأصالة في الأداء</div></div>
+        <div class="perf-card" onclick="startExercise('cooldown','sing')"><span class="perf-icon">❄️</span><div class="perf-name">التهدئة الصوتية</div><div class="perf-desc">تبريد الصوت بعد الغناء المكثف</div></div>
+        <div class="perf-card" onclick="startExercise('mixedvoice','sing')"><span class="perf-icon">🔀</span><div class="perf-name">الصوت المختلط</div><div class="perf-desc">دمج الصوت الصدري والرأسي بسلاسة</div></div>
+        <div class="perf-card" onclick="startExercise('improvisation','sing')"><span class="perf-icon">🎲</span><div class="perf-name">الارتجال الصوتي</div><div class="perf-desc">الغناء الحر والتلقائي بلا قيود</div></div>
+      </div>
+      <div class="exercise-box" id="singingExBox" style="margin:0 16px 16px;display:none;">
+        <div class="ex-title" id="sExTitle">التمرين الغنائي</div>
+        <div class="ex-steps" id="sExSteps"></div>
+        <div id="sExRef" style="margin-top:10px;font-size:11px;color:rgba(0,255,225,0.5);font-family:'Space Grotesk',sans-serif;border-top:1px solid rgba(0,255,225,0.1);padding-top:8px;"></div>
+        <!-- ✅ FIX: زر استماع للتمرين الغنائي -->
+        <div style="display:flex;gap:8px;margin-top:12px;">
+          <button class="gen-btn" style="flex:3;" onclick="sendExerciseToChat()">تدرّب مع صوت ←</button>
+          <button class="gen-btn" style="flex:1;background:linear-gradient(135deg,var(--cyan),var(--violet));" onclick="speakExercise('sExSteps')" title="استمع للتمرين">🔊</button>
+        </div>
+      </div>
+    </div>
+    <!-- CONTENT TAB -->
+    <div class="tab-panel" id="panel-content">
+      <div class="content-panel">
+        <div style="font-size:13px;color:var(--text2);margin-bottom:4px;" id="ctTitle">اختر نوع المحتوى:</div>
+        <div class="content-types">
+          <button class="ct-btn active" onclick="selectCT(this,'caption')">كابشن إنستقرام</button>
+          <button class="ct-btn" onclick="selectCT(this,'story')">نص ستوري</button>
+          <button class="ct-btn" onclick="selectCT(this,'script')">سكريبت فيديو</button>
+          <button class="ct-btn" onclick="selectCT(this,'bio')">بايو احترافي</button>
+          <button class="ct-btn" onclick="selectCT(this,'podcast')">مقدمة بودكاست</button>
+          <button class="ct-btn" onclick="selectCT(this,'plan')">خطة محتوى</button>
+          <button class="ct-btn" onclick="selectCT(this,'hook')">هوك جذّاب</button>
+          <button class="ct-btn" onclick="selectCT(this,'voiceover')">فويس أوفر</button>
+          <button class="ct-btn" onclick="selectCT(this,'reel')">سكريبت ريلز</button>
+          <button class="ct-btn" onclick="selectCT(this,'lyrics')">كلمات أغنية</button>
+          <button class="ct-btn" onclick="selectCT(this,'keynote')">خطاب رسمي</button>
+          <button class="ct-btn" onclick="selectCT(this,'pitch')">Pitch عرض</button>
+        </div>
+        <div class="content-input-area">
+          <textarea class="content-textarea" id="contentPrompt" placeholder="أخبر صوت عن موضوعك أو فكرتك..." rows="3"></textarea>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <button class="ct-btn active" onclick="selectLangContent(this,'ar')" style="flex:1" id="cl-ar">عربي</button>
+          <button class="ct-btn" onclick="selectLangContent(this,'en')" style="flex:1" id="cl-en">English</button>
+          <button class="ct-btn" onclick="selectLangContent(this,'both')" style="flex:1" id="cl-both">كلاهما</button>
+        </div>
+        <button class="gen-btn" onclick="generateContent()" id="genBtn">✨ أنشئ المحتوى</button>
+        <div class="content-output" id="contentOutput">
+          <button class="copy-btn" onclick="copyContent()" id="copyBtn">نسخ</button>
+          <div id="contentText" style="margin-top:8px;"></div>
+        </div>
+      </div>
+    </div>
+    <!-- FILES TAB -->
+    <div class="tab-panel" id="panel-files">
+      <div class="files-panel">
+        <div class="drop-zone" id="dropZone"
+          onclick="document.getElementById('fileUpload').click()"
+          ondragover="event.preventDefault();this.classList.add('dragover')"
+          ondragleave="this.classList.remove('dragover')"
+          ondrop="handleDrop(event)">
+          <span class="drop-icon">🎵</span>
+          <div class="drop-text" id="dropText">ارفع ملفاتك الصوتية هنا للتحليل والتقييم</div>
+          <div style="font-size:12px;color:rgba(200,210,255,0.3);margin-top:8px;">MP3 · WAV · M4A · OGG</div>
+        </div>
+        <input type="file" id="fileUpload" accept="audio/*" multiple style="display:none" onchange="handleFiles(event)">
+        <div class="file-list" id="fileList"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const DEMO_CODES = ['SW-DEMO-2026','SW-TEST-0001','SW-0001-SAWT'];
+const VALID_CODES = JSON.parse(localStorage.getItem('sawt_codes') || '{}');
+
+let currentLang = 'ar';
+let currentTab = 'training';
+let selectedContentType = 'caption';
+let selectedContentLang = 'ar';
+let isListening = false;
+let recognition = null;
+let conversationHistory = [];
+let uploadedFiles = [];
+let currentExercise = '';
+let currentCode = '';
+let userProfile = { name:'', goals:[], level:'', notes:'', sessions:0, lastSeen:'' };
+
+// ══ MEMORY ══
+function memKey(type) { return 'sawt_' + type + '_' + currentCode; }
+function saveMemory() {
+  if(!currentCode) return;
+  try {
+    localStorage.setItem(memKey('history'), JSON.stringify(conversationHistory.slice(-60)));
+    localStorage.setItem(memKey('profile'), JSON.stringify(userProfile));
+  } catch(e) {}
+}
+function loadMemory(code) {
+  currentCode = code;
+  try {
+    const hist = JSON.parse(localStorage.getItem(memKey('history')) || '[]');
+    const prof = JSON.parse(localStorage.getItem(memKey('profile')) || '{}');
+    conversationHistory = hist;
+    userProfile = { name:'', goals:[], level:'', notes:'', sessions:0, lastSeen:'', ...prof };
+    userProfile.sessions = (userProfile.sessions || 0) + 1;
+    userProfile.lastSeen = new Date().toLocaleDateString('ar-KW');
+  } catch(e) {
+    conversationHistory = [];
+    userProfile = { name:'', goals:[], level:'', notes:'', sessions:1, lastSeen:'' };
+  }
+}
+function clearMemory() {
+  if(!confirm(currentLang==='ar'?'مسح كل ذاكرة صوت عنك؟':'Clear all SAWT memory?')) return;
+  localStorage.removeItem(memKey('history'));
+  localStorage.removeItem(memKey('profile'));
+  conversationHistory = [];
+  userProfile = { name:'', goals:[], level:'', notes:'', sessions:0, lastSeen:'' };
+  const area = document.getElementById('chatArea');
+  area.innerHTML = '<div class="bubble sawt" id="welcomeBubble"><div class="bubble-name">🎙️ صوت</div><span id="welcomeMsg"></span></div><div class="bubble sawt" style="display:none" id="typingInd"><div class="typing-dots"><span></span><span></span><span></span></div></div>';
+  showToast(currentLang==='ar'?'تم مسح الذاكرة 🧹':'Memory cleared 🧹');
+  updateMemoryBadge();
+}
+function updateMemoryBadge() {
+  const badge = document.getElementById('memoryBadge');
+  if(!badge) return;
+  const n = userProfile.name, s = userProfile.sessions, g = (userProfile.goals||[]).length;
+  if(n || s > 1) { badge.textContent = `${n?'👤 '+n:''}  ${s>1?'· جلسة '+s:''}  ${g?'· '+g+' هدف':''}`; badge.style.display = 'flex'; }
+  else { badge.style.display = 'none'; }
+}
+function buildUserContext() {
+  const parts = [];
+  if(userProfile.name) parts.push('اسم المتدرّب: '+userProfile.name);
+  if(userProfile.level) parts.push('مستواه: '+userProfile.level);
+  if(userProfile.goals?.length) parts.push('أهدافه الصوتية: '+userProfile.goals.join('، '));
+  if(userProfile.notes) parts.push('ملاحظات: '+userProfile.notes);
+  if(userProfile.sessions > 1) parts.push('هذه جلسته رقم '+userProfile.sessions);
+  if(!parts.length) return '';
+  return '\n\n--- معلومات المتدرّب ---\n' + parts.join('\n') + '\n---';
+}
+
+// ══ SYSTEM PROMPT ══
+const SYSTEM_AR = `أنت "صوت" — مدرّب صوتي محترف واستثنائي. شخصيتك دافئ وحيوي وحاضر.
+تخصصاتك: تدريب الصوت، الأداء الصوتي، الغناء، إنشاء المحتوى.
+أعطِ تمريناً عملياً في كل رد. تكلّم بالعربية الخليجية الدافئة أو الفصحى.`;
+
+const SYSTEM_EN = `You are "SAWT" — an exceptional professional voice coach. Warm, energetic, fully present.
+Specialties: voice training, vocal performance, singing, content creation.
+Always give a practical exercise. Speak clearly and naturally.`;
+
+// ══ STARS ══
+(function(){
+  const c = document.getElementById('stars');
+  for(let i=0;i<120;i++){
+    const s=document.createElement('div'); s.className='star';
+    const size=Math.random()*2.5+0.5;
+    s.style.cssText=`width:${size}px;height:${size}px;left:${Math.random()*100}%;top:${Math.random()*100}%;background:hsl(${200+Math.random()*80},80%,${70+Math.random()*30}%);animation-duration:${2+Math.random()*4}s;animation-delay:${Math.random()*4}s;`;
+    c.appendChild(s);
+  }
+})();
+
+document.addEventListener('mousemove', e => {
+  const cur = document.getElementById('cursor');
+  if(cur){ cur.style.left=(e.clientX-10)+'px'; cur.style.top=(e.clientY-10)+'px'; }
+});
+
+// ══ LANG ══
+function setLang(lang) {
+  currentLang = lang;
+  document.getElementById('htmlRoot').setAttribute('lang', lang);
+  document.getElementById('htmlRoot').setAttribute('dir', lang==='ar'?'rtl':'ltr');
+  document.querySelectorAll('.lang-btn').forEach(b => {
+    b.classList.toggle('active', (lang==='ar'&&b.textContent.includes('ع'))||(lang==='en'&&b.textContent.includes('En')));
+  });
+  const lbl = document.getElementById('codeLabel');
+  if(lbl) lbl.textContent = lang==='ar'?'أدخل كود الوصول':'Enter your access code';
+  const btn = document.getElementById('enterBtnTxt');
+  if(btn) btn.textContent = lang==='ar'?'دخول ← Enter':'Enter →';
+}
+
+function toggleLang() { currentLang = currentLang==='ar'?'en':'ar'; applyLang(); }
+
+function applyLang() {
+  const isAr = currentLang === 'ar';
+  document.getElementById('htmlRoot').setAttribute('dir', isAr?'rtl':'ltr');
+  document.getElementById('htmlRoot').setAttribute('lang', currentLang);
+  const safe = (id, txt) => { const el=document.getElementById(id); if(el) el.textContent=txt; };
+  safe('tbLangBtn', isAr?'EN':'AR');
+  safe('tbExitBtn', isAr?'خروج':'Exit');
+  safe('sawtName', isAr?'صوت — مدرّب الأصوات':'SAWT — Voice Coach');
+  safe('sawtStatus', isAr?'متصل · Online':'Online · متصل');
+  safe('tabTrain', isAr?'تدريب':'Train');
+  safe('tabPerf', isAr?'أداء':'Perform');
+  safe('tabSing', isAr?'غناء':'Sing');
+  safe('tabCont', isAr?'محتوى':'Content');
+  safe('tabFiles', isAr?'ملفات':'Files');
+  safe('genBtn', isAr?'✨ أنشئ المحتوى':'✨ Generate Content');
+  safe('dropText', isAr?'ارفع ملفاتك الصوتية هنا للتحليل والتقييم':'Upload audio files here for analysis');
+  safe('ctTitle', isAr?'اختر نوع المحتوى:':'Choose content type:');
+  const msgInp = document.getElementById('msgInput');
+  if(msgInp) msgInp.placeholder = isAr?'اكتب رسالتك...':'Type your message...';
+  const cp = document.getElementById('contentPrompt');
+  if(cp) cp.placeholder = isAr?'أخبر صوت عن موضوعك أو فكرتك...':'Tell SAWT about your topic...';
+  // تحديث لغة التعرف على الصوت
+  if(recognition) recognition.lang = isAr ? 'ar-SA' : 'en-US';
+}
+
+// ══ CODE VALIDATION ══
+async function enterCode() {
+  const code = document.getElementById('codeInput').value.trim().toUpperCase();
+  const err = document.getElementById('errMsg');
+  const btn = document.getElementById('enterBtnTxt');
+  if(code.length < 12){ showErr(err); return; }
+  if(DEMO_CODES.includes(code) || VALID_CODES[code]) { saveSession(code); launchApp(code); return; }
+  if(btn) btn.textContent = '...';
+  try {
+    const r = await fetch('/.netlify/functions/chat', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ botId:'sawt', code, message:'__verify__', history:[] })
+    });
+    const d = await r.json();
+    if(d.error){ showErr(err, d.error); }
+    else { saveSession(code); launchApp(code); }
+  } catch(e) { showErr(err, 'خطأ في الاتصال'); }
+  finally { if(btn) btn.textContent = currentLang==='ar'?'دخول ← Enter':'Enter →'; }
+}
+
+function showErr(el, msg) {
+  if(!el) return;
+  el.textContent = msg || (currentLang==='ar'?'كود غير صحيح — Invalid code':'Invalid code');
+  el.style.display = 'block';
+  setTimeout(()=>{ el.style.display='none'; }, 3000);
+}
+
+function saveSession(code) {
+  try { localStorage.setItem('sawt_session', JSON.stringify({ code, lang:currentLang, time:Date.now() })); } catch(e){}
+}
+
+function launchApp(code) {
+  document.getElementById('screenLanding').classList.remove('active');
+  document.getElementById('screenApp').classList.add('active');
+  loadMemory(code);
+  if(conversationHistory.length > 0) {
+    const area = document.getElementById('chatArea');
+    const typing = document.getElementById('typingInd');
+    conversationHistory.forEach(msg => {
+      if(msg.role==='user'||msg.role==='assistant') {
+        const b = document.createElement('div');
+        b.className = 'bubble '+(msg.role==='assistant'?'sawt':'user');
+        b.innerHTML = msg.role==='assistant'
+          ? '<div class="bubble-name">🎙️ صوت</div>'+msg.content.replace(/\n/g,'<br>')
+          : '<div class="bubble-name">👤</div>'+msg.content;
+        area.insertBefore(b, typing);
+      }
+    });
+    area.scrollTop = area.scrollHeight;
+    const greeting = userProfile.name ? `أهلاً مجدداً ${userProfile.name} 👋 — نكمل التدريب؟` : 'أهلاً مجدداً 👋 — نكمل التدريب؟';
+    const wm = document.getElementById('welcomeMsg');
+    if(wm) wm.textContent = greeting;
+  } else {
+    const wm = document.getElementById('welcomeMsg');
+    if(wm) wm.textContent = currentLang==='ar'
+      ? 'مرحباً بك في أكاديمية صوت! 🎙️✨\n\nأنا صوت — مدرّبك الصوتي الشخصي.\n\nأخبرني: ما هدفك الصوتي اليوم؟'
+      : 'Welcome to SAWT Voice Academy! 🎙️✨\n\nI\'m SAWT — your personal voice coach.\n\nWhat\'s your vocal goal today?';
+  }
+  const sb = document.getElementById('sessionBadge');
+  if(sb) sb.textContent = code;
+  updateMemoryBadge();
+  applyLang();
+  initRecognition();
+  // تحميل الأصوات
+  if(window.speechSynthesis) window.speechSynthesis.getVoices();
+}
+
+// ══ TABS ══
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.mode-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  const tabEl = document.getElementById('tab-'+tab);
+  const panelEl = document.getElementById('panel-'+tab);
+  if(tabEl) tabEl.classList.add('active');
+  if(panelEl) panelEl.classList.add('active');
+}
+
+// ══ CHAT ══
+async function sendMsg() {
+  const input = document.getElementById('msgInput');
+  if(!input) return;
+  const text = input.value.trim();
+  if(!text) return;
+  input.value = ''; input.style.height = '';
+  addBubble(text, 'user');
+  conversationHistory.push({ role:'user', content:text });
+  await callSawt();
+}
+
+function addBubble(text, who) {
+  const area = document.getElementById('chatArea');
+  const typing = document.getElementById('typingInd');
+  if(!area) return;
+  const b = document.createElement('div');
+  b.className = 'bubble '+who;
+  b.innerHTML = who==='sawt'
+    ? '<div class="bubble-name">🎙️ صوت</div>'+text.replace(/\n/g,'<br>')
+    : '<div class="bubble-name">👤</div>'+text;
+  area.insertBefore(b, typing);
+  area.scrollTop = area.scrollHeight;
+}
+
+function showTyping(show) {
+  const ti = document.getElementById('typingInd');
+  const area = document.getElementById('chatArea');
+  if(ti) ti.style.display = show?'block':'none';
+  if(area) area.scrollTop = area.scrollHeight;
+}
+
+async function callSawt(extraContext='') {
+  showTyping(true);
+  const userCtx = buildUserContext();
+  const system = (currentLang==='ar'?SYSTEM_AR:SYSTEM_EN) + userCtx + extraContext;
+  try {
+    const res = await fetch('/.netlify/functions/sawt', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ type:'chat', max_tokens:1000, system, messages:conversationHistory })
+    });
+    const data = await res.json();
+    const reply = data.content?.[0]?.text || (currentLang==='ar'?'عذراً، حدث خطأ':'Sorry, error');
+    showTyping(false);
+    conversationHistory.push({ role:'assistant', content:reply });
+    addBubble(reply, 'sawt');
+    speakSawt(reply);
+    saveMemory();
+  } catch(e) {
+    showTyping(false);
+    addBubble(currentLang==='ar'?'عذراً، فقدنا الاتصال':'Sorry, connection lost', 'sawt');
+  }
+}
+
+// ══════════════════════════════════
+// ✅ TTS — محسّنة مع اختيار الصوت العربي
+// ══════════════════════════════════
+let ttsEnabled = true;
+
+function speakSawt(text) {
+  if(!window.speechSynthesis || !ttsEnabled) return;
+  window.speechSynthesis.cancel();
+
+  // تنظيف شامل للنص
+  const clean = text
+    .replace(/[\u{1F300}-\u{1FFFF}]/gu, '')
+    .replace(/[\u2600-\u26FF\u2700-\u27BF]/g, '')
+    .replace(/\*\*([^*]+)\*\*/g, '$1')
+    .replace(/\*([^*]+)\*/g, '$1')
+    .replace(/^#{1,3}\s+/gm, '')
+    .replace(/📚[^\n]*/g, '')
+    .replace(/^[١٢٣٤٥٦٧٨٩\d][.\-)] /gm, '')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+
+  if(!clean || clean.length < 3) return;
+
+  function doSpeak(voices) {
+    const utt = new SpeechSynthesisUtterance(clean);
+    utt.lang = currentLang === 'ar' ? 'ar-SA' : 'en-US';
+    utt.rate = 0.82;
+    utt.pitch = 1.0;
+    utt.volume = 1.0;
+
+    // ✅ اختيار أفضل صوت عربي متاح
+    if(currentLang === 'ar' && voices.length > 0) {
+      const arVoice =
+        voices.find(v => v.lang === 'ar-SA') ||
+        voices.find(v => v.lang === 'ar-KW') ||
+        voices.find(v => v.lang === 'ar-AE') ||
+        voices.find(v => v.lang.startsWith('ar'));
+      if(arVoice) utt.voice = arVoice;
+    }
+
+    utt.onerror = () => {};
+    window.speechSynthesis.speak(utt);
+  }
+
+  const voices = window.speechSynthesis.getVoices();
+  if(voices.length > 0) {
+    doSpeak(voices);
+  } else {
+    window.speechSynthesis.addEventListener('voiceschanged', () => {
+      doSpeak(window.speechSynthesis.getVoices());
+    }, { once: true });
+  }
+}
+
+function toggleTTS() {
+  ttsEnabled = !ttsEnabled;
+  if(!ttsEnabled && window.speechSynthesis) window.speechSynthesis.cancel();
+  const btn = document.getElementById('ttsToggle');
+  if(btn) btn.textContent = ttsEnabled ? '🔊' : '🔇';
+  showToast(ttsEnabled
+    ? (currentLang==='ar' ? 'الصوت مفعّل 🔊' : 'Voice ON 🔊')
+    : (currentLang==='ar' ? 'الصوت مكتوم 🔇' : 'Voice OFF 🔇'));
+}
+
+function speakExercise(stepsId) {
+  const el = document.getElementById(stepsId);
+  if(!el || !el.textContent.trim()) return;
+  if(!ttsEnabled) { showToast(currentLang==='ar'?'فعّل الصوت أولاً 🔊':'Enable voice first 🔊'); return; }
+  speakSawt(el.textContent);
+  showToast(currentLang==='ar' ? '▶ يقرأ التمرين...' : '▶ Reading exercise...');
+}
+
+// ══════════════════════════════════
+// ✅ MICROPHONE — محسّنة مع معالجة الأخطاء
+// ══════════════════════════════════
+function initRecognition() {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if(!SR) {
+    const mb = document.getElementById('micBtn');
+    if(mb) { mb.style.opacity = '0.4'; mb.title = currentLang==='ar'?'جرّب Chrome':'Try Chrome'; }
+    return;
+  }
+
+  recognition = new SR();
+  recognition.continuous = false;
+  recognition.interimResults = true;
+  recognition.maxAlternatives = 1;
+  recognition.lang = currentLang === 'ar' ? 'ar-SA' : 'en-US';
+
+  recognition.onstart = () => {
+    const tp = document.getElementById('transcriptPreview');
+    if(tp) tp.textContent = currentLang==='ar' ? '🎙️ يستمع...' : '🎙️ Listening...';
+  };
+
+  recognition.onresult = e => {
+    let interim = '', final = '';
+    for(let i = e.resultIndex; i < e.results.length; i++) {
+      if(e.results[i].isFinal) final += e.results[i][0].transcript;
+      else interim += e.results[i][0].transcript;
+    }
+    const tp = document.getElementById('transcriptPreview');
+    if(tp) tp.textContent = final || interim;
+    if(final) {
+      const mi = document.getElementById('msgInput');
+      if(mi) mi.value = final;
+      stopMic();
+      setTimeout(() => sendMsg(), 150);
+    }
+  };
+
+  recognition.onend = () => { if(isListening) stopMic(); };
+
+  recognition.onerror = e => {
+    stopMic();
+    const msgs = {
+      'not-allowed':   currentLang==='ar' ? '❌ رُفض إذن الميك — فعّله من إعدادات المتصفح' : '❌ Mic denied — check browser settings',
+      'no-speech':     currentLang==='ar' ? 'لم يُسمع صوت — حاول مجدداً' : 'No speech — try again',
+      'network':       currentLang==='ar' ? 'خطأ في الشبكة' : 'Network error',
+      'audio-capture': currentLang==='ar' ? '❌ لا يوجد ميكروفون' : '❌ No microphone found',
+      'aborted':       '',
+    };
+    const msg = msgs[e.error];
+    if(msg) showToast(msg);
+  };
+}
+
+function toggleMic() {
+  if(isListening) { stopMic(); return; }
+
+  // تحقق من دعم المتصفح
+  if(!window.SpeechRecognition && !window.webkitSpeechRecognition) {
+    showToast(currentLang==='ar' ? '❌ جرّب Google Chrome للميكروفون' : '❌ Try Chrome for mic support');
+    return;
+  }
+
+  // ✅ طلب إذن الميكروفون أولاً
+  if(navigator.mediaDevices?.getUserMedia) {
+    navigator.mediaDevices.getUserMedia({ audio: true })
+      .then(() => startMic())
+      .catch(() => showToast(currentLang==='ar'
+        ? '❌ فعّل الميكروفون من إعدادات المتصفح'
+        : '❌ Enable mic in browser settings'));
+  } else {
+    startMic();
+  }
+}
+
+function startMic() {
+  if(!recognition) initRecognition();
+  if(!recognition) return;
+
+  try {
+    recognition.lang = currentLang === 'ar' ? 'ar-SA' : 'en-US';
+    recognition.start();
+    isListening = true;
+    const mb = document.getElementById('micBtn');
+    if(mb) { mb.classList.add('listening'); mb.textContent = '⏹'; }
+    animateWave(true);
+  } catch(e) {
+    // إذا كان يعمل بالفعل — أعد المحاولة
+    if(e.name === 'InvalidStateError') {
+      try { recognition.abort(); } catch(e2) {}
+      setTimeout(() => {
+        initRecognition();
+        startMic();
+      }, 400);
+    }
+  }
+}
+
+function stopMic() {
+  if(recognition) try { recognition.stop(); } catch(e) {}
+  isListening = false;
+  const mb = document.getElementById('micBtn');
+  if(mb) { mb.classList.remove('listening'); mb.textContent = '🎙️'; }
+  animateWave(false);
+  const tp = document.getElementById('transcriptPreview');
+  if(tp) tp.textContent = '';
+}
+
+let waveInterval;
+function animateWave(active) {
+  clearInterval(waveInterval);
+  const bars = document.querySelectorAll('.wave-bar');
+  if(!active){ bars.forEach(b=>b.style.height='4px'); return; }
+  waveInterval = setInterval(()=>{ bars.forEach(b=>b.style.height=(4+Math.random()*22)+'px'); }, 80);
+}
+
+// ══ EXERCISES ══
+const exercises = {
+  breath:{ ar:{title:'التنفس الصوتي',steps:`١. ضع يدك على بطنك — أحسس البطن يتحرك للأمام عند الشهيق\n٢. خذ نفساً من الأنف: ٤ ثواني\n٣. احبسه: ٢ ثانية\n٤. أخرجه بحرف "سسسسس": ٨ ثواني\n٥. كرّر ٥ مرات`,ref:'📚 لينكلاتر — Freeing the Natural Voice (1976)'}, en:{title:'Vocal Breathing',steps:`1. Hand on belly — feel it expand on inhale\n2. Breathe in: 4 sec\n3. Hold: 2 sec\n4. Release on "ssssss": 8 sec\n5. Repeat 5 times`,ref:'📚 Linklater — Freeing the Natural Voice (1976)'} },
+  projection:{ ar:{title:'الإسقاط الصوتي',steps:`١. قف مستقيماً — الصدر مفتوح\n٢. قل "ها" بقوة من البطن\n٣. تدرّج: همس ← طبيعي ← إسقاط كامل\n٤. أرسل الصوت للأمام كموجة`,ref:'📚 ليساك — Body Wisdom (1978)'}, en:{title:'Voice Projection',steps:`1. Stand tall, chest open\n2. Say "HA" powerfully from belly\n3. Progress: whisper → normal → full projection\n4. Send voice forward like a wave`,ref:'📚 Lessac — Body Wisdom (1978)'} },
+  tone:{ ar:{title:'تعديل النبرة',steps:`١. قل "مممممم" بفم مغلق\n٢. انتقل من الطبقة العميقة للعالية\n٣. جرّب نفس الجملة بـ ٣ نبرات: سلطوية — ودّية — تساؤلية`,ref:'📚 بيري — Voice and the Actor (1973)'}, en:{title:'Tone Modulation',steps:`1. Say "mmmmmm" with mouth closed\n2. Slide from low to high pitch\n3. Same sentence in 3 tones: authoritative — friendly — questioning`,ref:'📚 Berry — Voice and the Actor (1973)'} },
+  articulation:{ ar:{title:'الإفصاح والنطق',steps:`١. تمرين الفلّين: ضع فلّينة بين أسنانك وتكلّم دقيقة\n٢. "بب بب — تت تت — كك كك" بسرعة متزايدة\n٣. ركّز على نهايات الكلمات`,ref:'📚 رودنبرج — The Right to Speak (1992)'}, en:{title:'Articulation',steps:`1. Cork exercise: speak with cork between teeth 1 min\n2. "b-b, t-t, k-k" with increasing speed\n3. Focus on word endings`,ref:'📚 Rodenburg — The Right to Speak (1992)'} },
+  rhythm:{ ar:{title:'الإيقاع والتوقف',steps:`١. توقف عند كل علامة ترقيم بدون استثناء\n٢. الصمت الذكي: توقف قبل الكلمة الأهم\n٣. سرّع جملة — أبطئ جملة`,ref:'📚 Toastmasters International'}, en:{title:'Rhythm & Pausing',steps:`1. Pause at every punctuation mark\n2. Smart silence before key word\n3. Speed up → slow down`,ref:'📚 Toastmasters International'} },
+  expression:{ ar:{title:'التعبير العاطفي',steps:`١. قل "أهلاً" بـ ٦ مشاعر: فرح، حزن، مفاجأة، غضب، حب، سخرية\n٢. تذكّر لحظة حقيقية عاطفية وتكلّم منها`,ref:'📚 ستانيسلافسكي — An Actor Prepares (1936)'}, en:{title:'Emotional Expression',steps:`1. Say "Hello" with 6 emotions: joy, sadness, surprise, anger, love, sarcasm\n2. Recall a real emotional moment and speak from it`,ref:'📚 Stanislavski — An Actor Prepares (1936)'} },
+  confidence:{ ar:{title:'ثقة المتحدث',steps:`١. قبل الكلام: ٣ أنفاس عميقة ببطء\n٢. وضعية القوة: قف منتصباً ذراعين مفتوحتين لمدة ٢ دقيقة\n٣. تكلّم بنسبة ٢٠٪ أبطأ`,ref:'📚 إيمي كادي — Presence (2012)'}, en:{title:'Speaker Confidence',steps:`1. 3 deep slow breaths before speaking\n2. Power pose: 2 minutes arms wide\n3. Speak 20% slower`,ref:'📚 Amy Cuddy — Presence (2012)'} },
+  storytelling:{ ar:{title:'فن السرد',steps:`١. كل قصة: حدث — صراع — حل\n٢. ابدأ بمشهد حي\n٣. تمهّل عند اللحظات المهمة`,ref:'📚 نانسي دوارت — Resonate (2010)'}, en:{title:'The Art of Storytelling',steps:`1. Every story: event — conflict — resolution\n2. Start with a vivid scene\n3. Slow down at key moments`,ref:'📚 Nancy Duarte — Resonate (2010)'} },
+  microphone:{ ar:{title:'تقنية الميكروفون',steps:`١. المسافة المثالية: ١٠-١٥ سم\n٢. الزاوية: ٤٥ درجة من الفم\n٣. اختبر الميك قبل كل أداء`,ref:'📚 NAB Standards'}, en:{title:'Microphone Technique',steps:`1. Ideal distance: 4-6 inches\n2. Angle: 45 degrees from mouth\n3. Always test before performing`,ref:'📚 NAB Standards'} },
+  nerves:{ ar:{title:'التغلب على التوتر',steps:`١. التوتر = طاقة — أعِد تأطيره\n٢. تنفس الـ 4-7-8: شهيق ٤، حبس ٧، زفير ٨\n٣. التصوّر: تخيّل الأداء المثالي ٥ دقائق`,ref:'📚 د. دون غرين — Fight Your Fear and Win (2001)'}, en:{title:'Overcoming Nerves',steps:`1. Nerves = energy — reframe it\n2. 4-7-8 breathing: inhale 4, hold 7, exhale 8\n3. Visualization: 5 min perfect performance`,ref:'📚 Dr. Don Greene — Fight Your Fear and Win (2001)'} },
+  persuasion:{ ar:{title:'قوة الإقناع الصوتي',steps:`١. اخفض الصوت قليلاً عند النقاط المهمة\n٢. التوقف قبل الفكرة الرئيسية\n٣. نهاية الجملة للأسفل = حسم وقوة`,ref:'📚 سيالديني — Influence (1984)'}, en:{title:'Vocal Persuasion',steps:`1. Lower voice slightly at key points\n2. Pause before main idea\n3. Falling intonation = certainty and authority`,ref:'📚 Cialdini — Influence (1984)'} },
+  broadcasting:{ ar:{title:'أسلوب الإذاعة',steps:`١. الصوت الإذاعي: دافئ، واضح، ثابت\n٢. السرعة: ١٣٠-١٥٠ كلمة في الدقيقة\n٣. تخيّل شخصاً واحداً يستمع إليك`,ref:'📚 BBC Voice Training Standards'}, en:{title:'Broadcasting Style',steps:`1. Broadcast voice: warm, clear, steady\n2. Speed: 130-150 wpm\n3. Imagine one person listening`,ref:'📚 BBC Voice Training Standards'} },
+  warmup:{ ar:{title:'الإحماء الصوتي',steps:`١. لفّ لسانك ببطء ٥ مرات\n٢. فرقع شفتيك "برررر" لمدة ١٠ ثواني\n٣. همهم "مممم" صعوداً وهبوطاً`,ref:'📚 سيث ريجز — Singing for the Stars (1992)'}, en:{title:'Vocal Warm-up',steps:`1. Roll tongue slowly 5 times\n2. Lip trill "brrrr" for 10 seconds\n3. Hum "mmmm" up and down scale`,ref:'📚 Seth Riggs — Singing for the Stars (1992)'} },
+  pitch:{ ar:{title:'ضبط المقام',steps:`١. ابدأ بنغمة مريحة — ثبّتها ١٠ ثواني\n٢. انتقل نغمة للأعلى بهدوء\n٣. استخدم تطبيق Chromatic Tuner`,ref:'📚 Chromatic Pitch Training'}, en:{title:'Pitch Accuracy',steps:`1. Start on comfortable note — hold 10 sec\n2. Move one note up slowly\n3. Use Chromatic Tuner app`,ref:'📚 Chromatic Pitch Training'} },
+  resonance:{ ar:{title:'الرنين الصوتي',steps:`١. قل "مووو" عميقاً — أحسس الصدر يهتز\n٢. قل "ميييي" عالياً — أحسس وجهك يرنّ\n٣. انتقل بين الرنين الصدري والرأسي`,ref:'📚 ميلر — The Structure of Singing (1986)'}, en:{title:'Vocal Resonance',steps:`1. Say "mowww" deeply — feel chest vibrate\n2. Say "meee" high — feel face buzz\n3. Move between chest and head resonance`,ref:'📚 Miller — The Structure of Singing (1986)'} },
+  maqam:{ ar:{title:'المقامات العربية',steps:`١. مقام راست: دو ري مي فا صول لا سي دو\n٢. مقام بياتي: دو ري♭ مي♭ فا صول\n٣. غنِّ "يا ليل يا عيني" في كل مقام`,ref:'📚 معهد الموسيقى العربية بالقاهرة'}, en:{title:'Arabic Maqamat',steps:`1. Maqam Rast: C D E F G A B C\n2. Maqam Bayati: D Eb F G A\n3. Sing "ya leil ya eini" in each maqam`,ref:'📚 Cairo Institute of Arabic Music'} },
+  vibrato:{ ar:{title:'الهزّة الصوتية',steps:`١. ثبّت نغمة ١٠ ثواني تماماً\n٢. أضف اهتزازاً خفيفاً من الحجاب الحاجز\n٣. تدرّج: ثابت — هزّة خفيفة — فيبراتو كامل`,ref:'📚 غارسيا — Traité (1847)'}, en:{title:'Vocal Vibrato',steps:`1. Hold note perfectly steady 10 sec\n2. Add gentle oscillation from diaphragm\n3. Progress: steady → light → full vibrato`,ref:'📚 García — Traité (1847)'} },
+  range:{ ar:{title:'توسيع النطاق',steps:`١. حدّد نطاقك الحالي\n٢. "ووووو" صعوداً — نغمة أعلى كل يوم\n٣. لا تدفع أبداً — الاسترخاء يُوسّع النطاق`,ref:'📚 CVT — Complete Vocal Technique'}, en:{title:'Range Expansion',steps:`1. Find your current range\n2. Ascending "woo" — one note higher each day\n3. Never push — relaxation expands range`,ref:'📚 CVT — Complete Vocal Technique'} },
+  belting:{ ar:{title:'البيلتينج',steps:`١. ليس الصراخ — إسقاط من الحجاب الحاجز\n٢. فتح الفم: الفك للأسفل بالكامل\n٣. قل "هاي" بقوة من البطن`,ref:'📚 Estill Voice Training System (EVT)'}, en:{title:'Belting Technique',steps:`1. NOT shouting — strong projection from diaphragm\n2. Open mouth: jaw fully down\n3. Say "HEY" with power from belly`,ref:'📚 Estill Voice Training System (EVT)'} },
+  voicehealth:{ ar:{title:'صحة الصوت',steps:`١. اشرب ٢ لتر ماء أو أكثر يومياً\n٢. الهمس يُرهق الحبال أكثر من الكلام — تجنّبه\n٣. صمت تام ١٥ دقيقة بعد كل أداء`,ref:'📚 National Center for Voice and Speech'}, en:{title:'Voice Health',steps:`1. Drink 2+ liters water daily\n2. Whispering strains cords more than speaking — avoid it\n3. Complete silence 15 min after every performance`,ref:'📚 National Center for Voice and Speech'} },
+  arabicsong:{ ar:{title:'الغناء العربي الأصيل',steps:`١. الطرب: إيصال الحالة النفسية للمستمع\n٢. التكرار العاطفي بمشاعر متصاعدة\n٣. الصمت بين العبارات: سحر الموسيقى العربية`,ref:'📚 أم كلثوم، صباح فخري'}, en:{title:'Authentic Arabic Singing',steps:`1. Tarab: transmit emotional state to listener\n2. Repeat phrases with escalating feeling\n3. Silence between phrases: the magic of Arabic music`,ref:'📚 Umm Kulthum, Sabah Fakhri'} },
+  cooldown:{ ar:{title:'التهدئة الصوتية',steps:`١. همهم "مممم" بهدوء تام لمدة دقيقة\n٢. اشرب ماءً دافئاً فقط — ليس بارداً\n٣. صمت تام ١٥ دقيقة`,ref:'📚 NCVS — Vocal Recovery Protocol'}, en:{title:'Vocal Cool-Down',steps:`1. Hum "mmmm" very softly for 1 min\n2. Warm water only — not cold\n3. Complete silence 15 min`,ref:'📚 NCVS — Vocal Recovery Protocol'} },
+  mixedvoice:{ ar:{title:'الصوت المختلط',steps:`١. "ما ما ما" صعوداً — لا تُغيّر الصوت عند الانتقال\n٢. تخيّل أنك ترسل الصوت للأمام وللأعلى\n٣. "ابتسامة داخلية" ترفع الحنك اللين`,ref:'📚 Brett Manning — Singing Success'}, en:{title:'Mixed Voice',steps:`1. "Mah mah mah" ascending — don't flip on passaggio\n2. Imagine sending voice forward and upward\n3. Inner smile raises the soft palate`,ref:'📚 Brett Manning — Singing Success'} },
+  improvisation:{ ar:{title:'الارتجال الصوتي',steps:`١. ابدأ بنغمة واحدة — أضف نغمة ثانية — استكشف\n٢. اتبع المشاعر: الفرح يصعد، الحزن ينزل\n٣. سجّل نفسك دائماً واستمع لاحقاً`,ref:'📚 Bobby McFerrin — Vocal Improvisation'}, en:{title:'Vocal Improvisation',steps:`1. Start one note — add another — explore freely\n2. Follow emotions: joy rises, sadness falls\n3. Always record yourself and listen back`,ref:'📚 Bobby McFerrin — Vocal Improvisation'} },
+};
+
+function startExercise(key, tab='perf') {
+  currentExercise = key;
+  const ex = exercises[key];
+  if(!ex) return;
+  const t = ex[currentLang] || ex.ar;
+  const singKeys = ['warmup','pitch','resonance','maqam','vibrato','range','belting','voicehealth','arabicsong','cooldown','mixedvoice','improvisation'];
+  const isSinging = tab==='sing' || singKeys.includes(key);
+  const boxId = isSinging ? 'singingExBox' : 'exerciseBox';
+  const titleId = isSinging ? 'sExTitle' : 'exTitle';
+  const stepsId = isSinging ? 'sExSteps' : 'exSteps';
+  const refId   = isSinging ? 'sExRef'   : 'exRef';
+  document.getElementById('exerciseBox').style.display = 'none';
+  document.getElementById('singingExBox').style.display = 'none';
+  const box = document.getElementById(boxId);
+  if(box) {
+    box.style.display = 'block';
+    document.getElementById(titleId).textContent = t.title;
+    document.getElementById(stepsId).textContent = t.steps;
+    const ref = document.getElementById(refId);
+    if(ref) ref.textContent = t.ref || '';
+    setTimeout(()=>box.scrollIntoView({behavior:'smooth',block:'nearest'}), 100);
+    // ✅ قراءة التمرين تلقائياً
+    setTimeout(() => speakSawt(t.title + '. ' + t.steps), 500);
+  }
+}
+
+function sendExerciseToChat() {
+  if(!currentExercise) return;
+  const ex = exercises[currentExercise];
+  const t = ex[currentLang] || ex.ar;
+  switchTab('training');
+  const mi = document.getElementById('msgInput');
+  if(mi) mi.value = currentLang==='ar'?`أريد التدرّب على: ${t.title}`:`I want to practice: ${t.title}`;
+  sendMsg();
+}
+
+// ══ CONTENT ══
+function selectCT(btn, type) {
+  document.querySelectorAll('.ct-btn[onclick*="selectCT"]').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  selectedContentType = type;
+}
+
+function selectLangContent(btn, lang) {
+  document.querySelectorAll('.ct-btn[onclick*="selectLangContent"]').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  selectedContentLang = lang;
+}
+
+async function generateContent() {
+  const prompt = document.getElementById('contentPrompt').value.trim();
+  if(!prompt){ showToast(currentLang==='ar'?'أدخل موضوعاً':'Enter a topic'); return; }
+  const genBtn = document.getElementById('genBtn');
+  if(genBtn) genBtn.textContent = currentLang==='ar'?'جاري الإنشاء...':'Generating...';
+  const out = document.getElementById('contentOutput');
+  if(out) out.style.display='none';
+  const langInstr = selectedContentLang==='ar'?'باللغة العربية':selectedContentLang==='en'?'in English':'in both Arabic and English';
+  const sys = currentLang==='ar'
+    ? `أنت صوت — خبير محتوى صوتي ورقمي. أنشئ ${selectedContentType} ${langInstr} بأسلوب احترافي وجذاب.`
+    : `You are SAWT — voice and digital content expert. Create ${selectedContentType} ${langInstr} professionally.`;
+  try {
+    const res = await fetch('/.netlify/functions/sawt', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ type:'content', max_tokens:1000, system:sys, messages:[{role:'user',content:prompt}] })
+    });
+    const data = await res.json();
+    const result = data.content?.[0]?.text || '';
+    const ct = document.getElementById('contentText');
+    if(ct) ct.textContent = result;
+    if(out) out.style.display='block';
+  } catch(e) { showToast(currentLang==='ar'?'حدث خطأ':'Error occurred'); }
+  if(genBtn) genBtn.textContent = currentLang==='ar'?'✨ أنشئ المحتوى':'✨ Generate Content';
+}
+
+function copyContent() {
+  const text = document.getElementById('contentText')?.textContent || '';
+  navigator.clipboard.writeText(text).then(()=>showToast(currentLang==='ar'?'تم النسخ ✓':'Copied ✓'));
+}
+
+// ══ FILES ══
+function handleAudioUpload(e) { const f=e.target.files[0]; if(f) processAudioFile(f); }
+function handleDrop(e) { e.preventDefault(); document.getElementById('dropZone').classList.remove('dragover'); [...e.dataTransfer.files].forEach(processAudioFile); }
+function handleFiles(e) { [...e.target.files].forEach(processAudioFile); }
+
+function processAudioFile(file) {
+  if(!file.type.startsWith('audio/')) return;
+  const url = URL.createObjectURL(file);
+  const id = Date.now()+Math.random();
+  const item = document.createElement('div');
+  item.className='file-item'; item.id='fi-'+id;
+  item.innerHTML=`<div class="file-icon">🎵</div><div class="file-info"><div class="file-name">${file.name}</div><div class="file-size">${(file.size/1024).toFixed(1)} KB</div><audio src="${url}" controls style="margin-top:6px;width:100%;"></audio></div><div class="file-actions"><button class="fa-btn fa-analyze" onclick="analyzeFile('${file.name}')">تحليل</button><button class="fa-btn fa-delete" onclick="document.getElementById('fi-${id}').remove()">✕</button></div>`;
+  const fl = document.getElementById('fileList');
+  if(fl) fl.appendChild(item);
+  switchTab('training');
+  const notif = currentLang==='ar'?`رفعت ملفاً: "${file.name}"\nأريد منك تقييم أدائي الصوتي فيه`:`I uploaded: "${file.name}"\nI'd like your feedback on my vocal performance`;
+  addBubble(notif,'user');
+  conversationHistory.push({role:'user',content:notif});
+  callSawt(`\n\nالمتدرّب رفع ملفاً صوتياً: ${file.name}. اطلب وصفاً وأعطِ تعليمات للتقييم الذاتي.`);
+  showToast(currentLang==='ar'?'تم رفع الملف':'File uploaded');
+}
+
+function analyzeFile(name) {
+  switchTab('training');
+  const msg = currentLang==='ar'?`تحليل "${name}" — ما الذي يجب أن أنتبه إليه؟`:`Analysis for "${name}" — what should I focus on?`;
+  addBubble(msg,'user');
+  conversationHistory.push({role:'user',content:msg});
+  callSawt();
+}
+
+// ══ UTILS ══
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  if(!t) return;
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2800);
+}
+
+function exitApp() {
+  if(confirm(currentLang==='ar'?'هل تريد الخروج؟ (محادثتك محفوظة)':'Exit? (session saved)')) {
+    saveMemory();
+    if(window.speechSynthesis) window.speechSynthesis.cancel();
+    document.getElementById('screenApp').classList.remove('active');
+    document.getElementById('screenLanding').classList.add('active');
+  }
+}
+
+// ══ INIT ══
+document.addEventListener('DOMContentLoaded', () => {
+  const mi = document.getElementById('msgInput');
+  if(mi) mi.addEventListener('input', function(){ this.style.height='auto'; this.style.height=Math.min(this.scrollHeight,100)+'px'; });
+
+  // تحميل الأصوات مسبقاً
+  if(window.speechSynthesis) {
+    window.speechSynthesis.getVoices();
+    window.speechSynthesis.addEventListener('voiceschanged', () => window.speechSynthesis.getVoices());
+  }
+
+  // استعادة الجلسة
+  try {
+    const sess = JSON.parse(localStorage.getItem('sawt_session')||'null');
+    if(sess && sess.code && (Date.now()-sess.time) < 86400000) {
+      currentLang = sess.lang || 'ar';
+      launchApp(sess.code);
+    }
+  } catch(e){}
+});
+</script>
+</body>
+</html>
